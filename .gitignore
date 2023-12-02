@@ -1,0 +1,39 @@
+# Editor temporaries.
+*~
+*.swp
+*.sublime-project
+*.sublime-workspace
+.idea/
+.vscode/
+
+# Python cache.
+__pycache__/
+*.pyc
+*.egg-info/
+
+# UI stuffs.
+node_modules/
+npm-debug.log
+.uibuild/
+.cache/
+
+# Vagrant dirts.
+Vagrantfile
+.vagrant/
+
+# MaxMind DB.
+*.mmdb
+
+# Generated fonts
+vj4/ui/misc/.iconfont
+
+# Generated constants
+vj4/constant
+
+# Generated locales
+vj4/ui/static/locale
+
+# Webpack Stats
+.webpackStats.json
+
+!.gitkeep
