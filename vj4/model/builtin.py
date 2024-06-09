@@ -90,6 +90,9 @@ PERM_EDIT_TRAINING_SELF = 1 << 49
 # Ranking.
 PERM_VIEW_RANKING = 1 << 59
 
+# User.
+PERM_USER_SET_CHEAT = 1 << 60
+
 PERM_ALL = -1
 
 Permission = collections.namedtuple('Permission',
@@ -156,6 +159,7 @@ PERMS = [
     Permission('perm_training', PERM_EDIT_TRAINING, 'Edit training plans'),
     Permission('perm_training', PERM_EDIT_TRAINING_SELF, 'Edit own training plans'),
     Permission('perm_ranking', PERM_VIEW_RANKING, 'View ranking'),
+    Permission('perm_user', PERM_USER_SET_CHEAT, 'Set user as Cheater'),
 ]
 
 PERMS_BY_FAMILY = collections.OrderedDict(
@@ -245,6 +249,8 @@ DEFAULT_PERMISSIONS = (
     PERM_VIEW_RANKING
 )
 ADMIN_PERMISSIONS = PERM_ALL
+TCA_PERMISSIONS = PERM_ALL ^ PERM_EDIT_PERM
+
 
 # Roles.
 ROLE_ROOT = 'root'
@@ -278,7 +284,7 @@ DOMAIN_SYSTEM = {
     'roles': {ROLE_GUEST: BASIC_PERMISSIONS,
               ROLE_DEFAULT: DEFAULT_PERMISSIONS,
               ROLE_MEMBER: DEFAULT_PERMISSIONS,
-              ROLE_ADMIN: ADMIN_PERMISSIONS},
+              ROLE_ADMIN: TCA_PERMISSIONS},
     'gravatar': '',
     'name': 'AKIOI OJ',
     'bulletin': BUILTIN_DOMAIN_BULLETIN
@@ -348,7 +354,7 @@ LEVELS = collections.OrderedDict([(10, 1),
                                   (1, 100)])
 
 # Footer extra HTMLs.
-FOOTER_EXTRA_HTMLS = ['© 2023 <a href="https://oj.xzynb.top">oj.xzynb.top</a>', "Powered by <a href='https://github.com/Gingmzmzx/AKIOIOJ'>AKIOIOJ</a> and <a href='https://github.com/vijos/vj4'>Vijos</a>"]
+FOOTER_EXTRA_HTMLS = ['© 2024 <a href="https://oj.xzynb.top">oj.xzynb.top</a>', "Powered by <a href='https://github.com/Gingmzmzx/AKIOIOJ'>AKIOIOJ</a> and <a href='https://github.com/vijos/vj4'>Vijos</a>"]
 
 PROBLEM_CATEGORIES = collections.OrderedDict([
     ('动态规划', [

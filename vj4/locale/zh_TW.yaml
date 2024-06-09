@@ -31,6 +31,7 @@ Browser: 瀏覽器
 ? By signing up a Vijos universal account, you can submit code and join discussions in all online
   judging services provided by us.
 : 註冊一個 AKIOI OJ 通用賬戶，您就可以在我們提供的所有線上評測服務上提交程式碼、參與討論。
+Cheater: 作弊者
 CLOSE: 關閉
 Cancel: 取消
 Ok: 確定
@@ -83,7 +84,7 @@ Footer: 頁尾
 Forgot password or username?: 忘記密碼或者使用者名？
 Gender: 性別
 Gender Visibility: 性別可見性
-Gravatar Email: Gravatar Email 地址
+Gravatar Email: 头像图片地址
 'Hello! You can click following link to sign up your Vijos account:': 您好！您可以點選以下連結來註冊您的 AKIOI OJ 賬戶：
 'Hello, {0}! You can click following link to reset the password of your Vijos account:': 您好，{0}！您可以點選以下連結來重置您
   AKIOI OJ 賬戶的密碼：
@@ -570,6 +571,7 @@ Create homework: 創建功課
 Claim homework: 認領功課
 Edit any homework: 修改任意功課
 Edit own homework: 修改自己的功課
+Set user as Cheater: 设置用户为作弊者
 Can be Extended For: 可延期
 Open Since: 開始時間
 Hard Deadline: 最終截止時間

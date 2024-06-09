@@ -3,7 +3,7 @@
 <li class="dczcomments__reply{% if mode_create %} commentbox-container{% endif %}">
   <div class="media">
     <div class="media__left top">
-      <img src="{{ udoc['gravatar']|gravatar_url }}" width="50" height="50" class="medium user-profile-avatar">
+      <img src="{{ udoc['gravatar']|default('https://old.xzynb.top/pic/1ico.png') }}" width="50" height="50" class="medium user-profile-avatar">
     </div>
     <div class="media__body top no-heading">
     {% if not mode_create %}
@@ -30,7 +30,7 @@
 <li class="dczcomments__item">
   <div class="media">
     <div class="media__left top">
-      <img src="{{ udoc['gravatar']|gravatar_url }}" width="60" height="60" class="medium user-profile-avatar">
+      <img src="{{ udoc['gravatar']|default('https://old.xzynb.top/pic/1ico.png') }}" width="60" height="60" class="medium user-profile-avatar">
     </div>
     <div class="media__body top no-heading">
     {% if not mode_create %}

@@ -36,7 +36,7 @@ PREFERENCE_SETTINGS = [
 ACCOUNT_SETTINGS = [
     Setting('setting_info', 'gravatar', str,
             name='Gravatar Email',
-            desc='We use <a href="https://en.gravatar.com/" target="_blank">Gravatar</a> to present your avatar icon.'),
+            desc='We will display a picture of that address as your avatar.'),
     Setting('setting_info', 'qq', str,
             name='QQ'),
     Setting('setting_info', 'wechat', str,

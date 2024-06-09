@@ -12,13 +12,18 @@
             </div>
             <div class="media__body profile-header__main">
               <h1>
-                {% if dudoc['display_name'] %}
-                  {{ dudoc['display_name'] }}
-                  <small>{{ udoc['uname'] }}</small>
-                {% else %}
-                  {{ udoc['uname'] }}
-                {% endif %}
+                <span class="{% if udoc['cheater'] %} cheater {% endif %}">
+                  {% if dudoc['display_name'] %}
+                    {{ dudoc['display_name'] }}
+                    <small>{{ udoc['uname'] }}</small>
+                  {% else %}
+                    {{ udoc['uname'] }}
+                  {% endif %}
+                </span>
                 <small>({{ _('UID') }}: {{ udoc['_id'] }})</small>
+                {% if udoc['cheater'] %}
+                  <small><a class="user-profile-badge v-center cheater_bg">{{ _('Cheater') }}</a></small>
+                {% endif %}
               </h1>
               <p>
                 {{ _('Registered at') }} {{ datetime_span(udoc['regat']) }},
@@ -39,6 +44,11 @@
                 <a class="profile-header__contact-item" href="{{ reverse_url('home_messages') }}?target_uid={{ udoc['_id'] }}" target="_blank" data-tooltip="{{ _('Send Message') }}">
                   <span class="icon icon-comment--multiple"></span>
                 </a>
+              {% if set_cheat_perm %}
+                <a class="profile-header__contact-item" href="{{ reverse_url('user_set_cheat', uid=udoc['_id']) }}" data-tooltip="{{ _('Set user as Cheater') }}">
+                  <span class="icon icon-block"></span>
+                </a>
+              {% endif %}
               {% if handler.can_view(udoc, 'mail') and udoc['mail'] %}
                 <a class="profile-header__contact-item" href="javascript:;" name="profile_contact_copy" data-content="{{ udoc['mail'] | base64_encode }}" data-tooltip="{{ _('Copy Email') }}">
                   <span class="icon icon-mail"></span>
@@ -73,6 +83,16 @@
                 >
                   MOD
                 </span>
+              {% endif %}
+              {% if udoc['tags'] %}
+                {% for tag in udoc['tags'] %}
+                  <span
+                    class="profile-header__contact-item user-profile-badge badge--mod"
+                    data-tooltip="{{ tag }}"
+                  >
+                    {{ tag }}
+                  </span>
+                {% endfor %}
               {% endif %}
               </div>
             </div>

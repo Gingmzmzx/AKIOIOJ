@@ -29,6 +29,7 @@ Browser: 浏览器
 ? By signing up a Vijos universal account, you can submit code and join discussions in all online
   judging services provided by us.
 : 注册一个 AKIOI OJ 通用账户，您就可以在我们提供的所有在线评测服务上提交代码、参与讨论。
+Cheater: 作弊者
 CLOSE: 关闭
 Cancel: 取消
 Ok: 确定
@@ -80,7 +81,7 @@ Footer: 页脚
 Forgot password or username?: 忘记密码或者用户名？
 Gender: 性别
 Gender Visibility: 性别可见性
-Gravatar Email: Gravatar Email 地址
+Gravatar Email: 头像图片地址
 'Hello! You can click following link to sign up your Vijos account:': 您好！您可以点击以下链接来注册您的 AKIOI OJ 账户：
 'Hello, {0}! You can click following link to reset the password of your Vijos account:': 您好，{0}！您可以点击以下链接来重置您
   AKIOI OJ 账户的密码：
@@ -215,7 +216,6 @@ View or create discussion: 查看与发表讨论
 View or submit solution: 查看与发表题解
 Visible to registered users: 对注册用户可见
 Vote: 投票
-'We use <a href="https://en.gravatar.com/" target="_blank">Gravatar</a> to present your avatar icon.': '我们使用 <a href="https://cn.gravatar.com/" target="_blank">Gravatar</a> 服务来呈现您的头像。'
 Whether to show tags in the problem list.: 是否在题目列表中显示题目的标签。
 Write Your Comment: 发表您的评论
 Write Your Solution: 发表您的题解
@@ -538,6 +538,7 @@ perm_contest: 比赛
 perm_homework: 作业
 perm_training: 训练
 perm_ranking: 排名
+perm_user: 用户
 discussion_edit: 编辑讨论
 At least 4 characters: 至少 4 个字符
 Contact: 联系
@@ -743,6 +744,7 @@ Create homework: 创建作业
 Claim homework: 认领作业
 Edit any homework: 修改任意的作业
 Edit own homework: 修改自己的作业
+Set user as Cheater: 设置用户为作弊者
 Can be Extended For: 可延期
 Open Since: 开始时间
 Hard Deadline: 最终截止时间

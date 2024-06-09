@@ -37,7 +37,7 @@
 AKIOIOJ并无预构建的Docker镜像，不过您可以使用`vijos/vj4`，参见[vijos/vj4-docker](https://github.com/vijos/vj4-docker)。  
 - 下载vj4-docker中的`docker-compose.yml`文件，将其放置于工作目录下；
 - 然后创建`data/app/`目录，并将本仓库克隆。
-- 修改`docker-compose.yml`中的`services.web.volumes`，添加一行`- "./data/app:/app"`
+- 修改`docker-compose.yml`中的`services.web.volumes`，添加一行`- "./data/app:/app"`  
   **注意！您可能也需要将`services.mongodb.image`改为`mongo:4.4.0`，使用`mongo:latest`会出现错误！**
 - 执行`docker-compose up -d`启动
 

@@ -48,7 +48,7 @@ async def add(uid: int, uname: str, password: str, mail: str, regip: str=''):
                            'priv': builtin.DEFAULT_PRIV,
                            'loginat': datetime.datetime.utcnow(),
                            'loginip': regip,
-                           'gravatar': mail})
+                           'gravatar': "https://old.xzynb.top/pic/1ico.png"})
   except errors.DuplicateKeyError:
     raise error.UserAlreadyExistError(uid, uname, mail) from None
 
@@ -142,6 +142,16 @@ async def set_mail(uid: int, mail: str):
   """Set mail. Returns doc or None."""
   validator.check_mail(mail)
   return await set_by_uid(uid, mail=mail, mail_lower=mail.strip().lower())
+
+
+@argmethod.wrap
+async def set_cheat(uid: int, status: bool):
+  """Set the user as Cheater or remove its Cheater tag"""
+  coll = db.coll('user')
+  doc = await coll.find_one_and_update(filter={'_id': uid},
+                                       update={'$set': {"cheater": status}},
+                                       return_document=ReturnDocument.AFTER)
+  return doc
 
 
 @argmethod.wrap

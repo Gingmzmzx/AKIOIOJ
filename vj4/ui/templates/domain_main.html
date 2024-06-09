@@ -2,26 +2,13 @@
 {% extends "layout/basic.html" %}
 {% import "components/contest.html" as contest with context %}
 {% block content %}
-{% if handler.domain['bulletin'] and domain_id != vj4.model.builtin.DOMAIN_ID_SYSTEM %}
-<div class="row">
-  <div class="large-12 columns">
-    <div class="section">
-      <div class="section__body typo">
-        {{ handler.domain['bulletin']|markdown }}
-      </div>
-    </div>
-  </div>
-</div>
-{% endif %}
 <div class="row">
   <div class="large-9 columns">
-  {% if domain_id == vj4.model.builtin.DOMAIN_ID_SYSTEM %}
   <div class="section">
     <div class="section__body typo">
       {{ handler.domain['bulletin']|markdown }}
     </div>
   </div>
-  {% endif %}
   {% if not tdocs %}
     <!-- no contest -->
   {% else %}
