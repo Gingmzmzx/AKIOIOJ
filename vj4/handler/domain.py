@@ -2,6 +2,7 @@ import asyncio
 import collections
 import datetime
 import functools
+import random
 
 from vj4 import app
 from vj4 import constant
@@ -19,6 +20,7 @@ from vj4.handler import training as training_handler
 from vj4.util import validator
 from vj4.util import misc
 from vj4.util import options
+from vj4.util import pagination
 
 
 @app.route('/', 'domain_main')
@@ -27,6 +29,7 @@ class DomainMainHandler(contest.ContestStatusMixin, base.Handler):
   HOMEWORK_ON_MAIN = 5
   TRAININGS_ON_MAIN = 5
   DISCUSSIONS_ON_MAIN = 20
+  USERS_PER_PAGE = 10
 
   async def prepare_contest(self):
     if self.has_perm(builtin.PERM_VIEW_CONTEST):
@@ -83,9 +86,23 @@ class DomainMainHandler(contest.ContestStatusMixin, base.Handler):
     (trdocs, trsdict), (ddocs, vndict) = await asyncio.gather(
         self.prepare_contest(), self.prepare_homework(),
         self.prepare_training(), self.prepare_discussion())
+    
+    dudocs, _, _ = await pagination.paginate(
+        domain.get_multi_user(domain_id=self.domain_id, rp={'$gt': 0.0}).sort([('rank', 1)]),
+        1, self.USERS_PER_PAGE)
     udict, dudict = await asyncio.gather(
-        user.get_dict(ddoc['owner_uid'] for ddoc in ddocs),
-        domain.get_dict_user_by_uid(self.domain_id, (ddoc['owner_uid'] for ddoc in ddocs)))
+        user.get_dict(dudoc['uid'] for dudoc in dudocs),
+        domain.get_dict_user_by_uid(self.domain_id, (dudoc['uid'] for dudoc in dudocs)))
+    
+    if self.has_priv(builtin.PRIV_USER_PROFILE):
+      rnd = random.Random()
+      rnd.seed(int(datetime.date.today().strftime("%y%m%d")) + int(self.user["_id"]))
+      lucknum = rnd.randint(1, 100)
+      dudoc = await domain.get_user(self.domain_id, self.user['_id'])
+    else:
+      lucknum = "未登录"
+      dudoc = {}
+
     self.render('domain_main.html', discussion_nodes=await discussion.get_nodes(self.domain_id),
                 tdocs=tdocs, tsdict=tsdict,
                 htdocs=htdocs, htsdict=htsdict,
@@ -93,7 +110,8 @@ class DomainMainHandler(contest.ContestStatusMixin, base.Handler):
                 training=training_handler.TrainingMixin(),
                 ddocs=ddocs, vndict=vndict,
                 udict=udict, dudict=dudict, datetime_stamp=self.datetime_stamp,
-                blessing=builtin.BLESSING, blessing_content=builtin.BLESSING_CONTENT)
+                blessing=builtin.BLESSING, blessing_content=builtin.BLESSING_CONTENT,
+                lucknum=lucknum, dudoc=dudoc, dudocs=dudocs, udoc=self.user, users_per_page=self.USERS_PER_PAGE)
 
 
 @app.route('/domain', 'domain_manage')

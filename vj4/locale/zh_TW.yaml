@@ -21,6 +21,7 @@ Login to Attend Contest: 登入後參加比賽
 No Permission to Attend Contest: 您沒有許可權參加比賽
 Begin Date: 開始日期
 Begin Time: 開始時間
+'Top {} users': '前{}用户'
 Belongs to: 屬於
 Bio: 個人簡介
 Bio Visibility: 個人簡介可見性
@@ -32,6 +33,8 @@ Browser: 瀏覽器
   judging services provided by us.
 : 註冊一個 AKIOI OJ 通用賬戶，您就可以在我們提供的所有線上評測服務上提交程式碼、參與討論。
 Cheater: 作弊者
+Memorial Account: 纪念账号
+Please allow us to bid a final farewell here to commemorate the memories and footprints left in AKIOI OJ: 请允许我们在此献上最后的告别，以纪念其在 AKIOI OJ 留下的回忆与足迹
 CLOSE: 關閉
 Cancel: 取消
 Ok: 確定

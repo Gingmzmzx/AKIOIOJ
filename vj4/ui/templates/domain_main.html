@@ -4,6 +4,27 @@
 {% block content %}
 <div class="row">
   <div class="large-9 columns">
+    {% if domain_id == vj4.model.builtin.DOMAIN_ID_SYSTEM %}
+    <div class="section">
+      <div class="section__body typo">
+        <div class="row">
+          <div class="large-9 columns">
+            <!-- Slider main container -->
+            <div id="swiper" class="swiper"></div>
+          </div>
+          <div class="large-3 columns">
+            {% if handler.has_priv(vj4.model.builtin.PRIV_USER_PROFILE) %}
+              <h2>欢迎回来，</h2>{{ user.render_inline(udoc, dudoc=dudoc) }}
+              <h4>今日人品 <b style="color: {% if lucknum > 75 %}#52C41A{% elif lucknum > 25 %}#FADB14{% else %}#E74C3C{% endif %}; ">{{ lucknum }}</b></h4>
+            {% else %}
+              <h2 style="text-align: center;">您还没有登录</h2>
+              <input type="button" name="nav_login" value="{{ _('Sign In') }}" class="expanded rounded primary button">
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
   <div class="section">
     <div class="section__body typo">
       {{ handler.domain['bulletin']|markdown }}
@@ -12,6 +33,50 @@
   {% if not tdocs %}
     <!-- no contest -->
   {% else %}
+    <div class="section">
+      <div class="section__header">
+        <h1 class="section__title">
+          {{ _('ranking_main') }}
+          <small>{{ _("Top {} users").format(users_per_page) }}</small>
+        </h1>
+      </div>
+      <div class="section__body no-padding">
+        <div data-fragment-id="ranking">
+          {% if not dudocs %}
+          {{ nothing.render('Sorry, there is no user in this domain.') }}
+          {% else %}
+          <table class="data-table">
+            <colgroup>
+              <col class="col--rank">
+              <col class="col--user">
+              <col class="col--info">
+            </colgroup>
+            <thead>
+              <tr>
+                <th class="col--rank">{{ _('Rank') }}</th>
+                <th class="col--user">{{ _('User') }}</th>
+                <th class="col--rp">{{ _('RP') }}</th>
+                <th class="col--accept">{{ _('Accepted') }}</th>
+                <th class="col--bio">{{ _('Bio') }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for dudoc in dudocs %}
+              <tr>
+                <td class="col--rank">{{ dudoc['rank'] }}</td>
+                <td class="col--user">{{ user.render_inline(udict[dudoc['uid']], dudoc=dudoc) }}</td>
+                <td class="col--rp">{{ dudoc['rp']|default(0.0)|round(2) }}</td>
+                <td class="col--accept">{{ dudoc['num_accept']|default(0) }}</td>
+                <td class="col--bio">{{ udict[dudoc['uid']]['bio']|default('')|markdown }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
     <div class="section page--contest_main">
       <div class="section__header">
         <h1 class="section__title">{{ _('Contest') }}</h1>

@@ -3,7 +3,7 @@
   <div class="col--status__text">
     <span class="icon record-status--icon {{ vj4.constant.record.STATUS_CODES[rdoc['status']] }}"></span>
     <a href="{{ reverse_url('record_detail', rid=rdoc[rid_key], domain_id=rdoc['domain_id']) }}" class="record-status--text {{ vj4.constant.record.STATUS_CODES[rdoc['status']] }}">
-      {% if blessing %}{{ blessing_msg }}&nbsp;&nbsp;&nbsp;{% endif %}{{ vj4.constant.record.STATUS_TEXTS[rdoc['status']] }}
+      {% if blessing %}{{ blessing_msg }}&nbsp;&nbsp;&nbsp;{% endif %} {% if rdoc['score'] %}{{ rdoc['score'] }}{% else %}0{% endif %} {{ vj4.constant.record.STATUS_TEXTS[rdoc['status']] }}
     </a>
   </div>
 {% if rdoc['status'] == vj4.constant.record.STATUS_JUDGING %}

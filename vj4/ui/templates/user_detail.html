@@ -208,6 +208,16 @@
   {% if is_self_profile %}
     {{ home.render_sidebar() }}
   {% endif %}
+  {% if udoc['commemorate'] %}
+  <div class="section side">
+    <div class="section__header">
+      <h1 class="section__title">{{ _("Memorial Account") }}</h1>
+    </div>
+    <div class="section__body typo">
+      {{ _("Please allow us to bid a final farewell here to commemorate the memories and footprints left in AKIOI OJ") }}
+    </div>
+  </div>
+  {% endif %}
     <div class="section side">
       <div class="section__body">
         <div class="balancer sidebar-user-stat">

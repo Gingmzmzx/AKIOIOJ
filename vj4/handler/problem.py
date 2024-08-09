@@ -56,7 +56,7 @@ async def render_or_json_problem_list(self, page, ppcount, pcount, pdocs,
 
 @app.route('/p', 'problem_main')
 class ProblemMainHandler(base.OperationHandler):
-  PROBLEMS_PER_PAGE = 100
+  PROBLEMS_PER_PAGE = 30
 
   @base.require_perm(builtin.PERM_VIEW_PROBLEM)
   @base.get_argument
@@ -78,7 +78,16 @@ class ProblemMainHandler(base.OperationHandler):
                                              (pdoc['doc_id'] for pdoc in pdocs))
     else:
       psdict = None
-    await render_or_json_problem_list(self, page=page, ppcount=ppcount, pcount=pcount,
+    
+    rdocs = {}
+    for key, value in psdict.items():
+      if not value.get('rid', False):
+        continue
+      rdoc = await record.get(value['rid'])
+      rdoc['rid'] = value['rid']
+      rdocs[key] = rdoc
+    
+    await render_or_json_problem_list(self, page=page, ppcount=ppcount, pcount=pcount, rdocs=rdocs,
                                       pdocs=pdocs, category='', psdict=psdict, domain_id=self.domain_id)
 
   @base.require_priv(builtin.PRIV_USER_PROFILE)

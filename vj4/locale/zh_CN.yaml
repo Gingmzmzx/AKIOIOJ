@@ -30,6 +30,8 @@ Browser: 浏览器
   judging services provided by us.
 : 注册一个 AKIOI OJ 通用账户，您就可以在我们提供的所有在线评测服务上提交代码、参与讨论。
 Cheater: 作弊者
+Memorial Account: 纪念账号
+Please allow us to bid a final farewell here to commemorate the memories and footprints left in AKIOI OJ: 请允许我们在此献上最后的告别，以纪念其在 AKIOI OJ 留下的回忆与足迹
 CLOSE: 关闭
 Cancel: 取消
 Ok: 确定
@@ -674,6 +676,7 @@ Initialize: 初始化
 Profile Background Image: 背景图片
 Choose the background image in your profile page.: 选择您资料页面的背景图片。
 '{} is a moderator of this domain.': '{}是这个域的管理者之一。'
+'Top {} users': '前{}用户'
 He: 他
 She: 她
 Bulletin: 公告

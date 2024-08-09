@@ -2,6 +2,7 @@
 {% import "components/record.html" as record with context %}
 {% import "components/problem.html" as problem with context %}
 {% import "components/nothing.html" as nothing with context %}
+
 <div data-fragment-id="problem_list">
 {% if not pdocs %}
   {{ nothing.render('Sorry, there is no problem in the problem set') }}
@@ -33,7 +34,7 @@
       <tr>
       {% if handler.has_priv(vj4.model.builtin.PRIV_USER_PROFILE) %}
       {% if psdoc['rid'] %}
-        {{ record.render_status_td(psdoc, blessing=psdict['blessing'], blessing_msg=psdict['blessing_msg'], rid_key='rid') }}
+        {{ record.render_status_td(rdocs[pdoc['doc_id']], blessing=psdict['blessing'], blessing_msg=psdict['blessing_msg'], rid_key='rid') }}
       {% else %}
         <td class="col--status record-status--border">
         </td>

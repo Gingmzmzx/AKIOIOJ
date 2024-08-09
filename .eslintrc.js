@@ -18,5 +18,9 @@ module.exports = {
     'no-param-reassign': 'off',
     'no-underscore-dangle': 'off',
     'no-continue': 'off',
+    'no-var': 'off',
+    'no-restricted-syntax': 'off',
+    'no-prototype-builtins': 'off',
+    'guard-for-in': 'off',
   },
 };
