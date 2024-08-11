@@ -71,21 +71,21 @@ class ProblemMainHandler(base.OperationHandler):
                                                                          **f) \
                                                               .sort([('doc_id', 1)]),
                                                        page, self.PROBLEMS_PER_PAGE)
+
+    rdocs = {}
     if self.has_priv(builtin.PRIV_USER_PROFILE):
       # TODO(iceboy): projection.
       psdict = await problem.get_dict_status(self.domain_id,
                                              self.user['_id'],
                                              (pdoc['doc_id'] for pdoc in pdocs))
+      for key, value in psdict.items():
+        if not value.get('rid', False):
+          continue
+        rdoc = await record.get(value['rid'])
+        rdoc['rid'] = value['rid']
+        rdocs[key] = rdoc
     else:
       psdict = None
-    
-    rdocs = {}
-    for key, value in psdict.items():
-      if not value.get('rid', False):
-        continue
-      rdoc = await record.get(value['rid'])
-      rdoc['rid'] = value['rid']
-      rdocs[key] = rdoc
     
     await render_or_json_problem_list(self, page=page, ppcount=ppcount, pcount=pcount, rdocs=rdocs,
                                       pdocs=pdocs, category='', psdict=psdict, domain_id=self.domain_id)

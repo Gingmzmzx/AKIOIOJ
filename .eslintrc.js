@@ -13,6 +13,7 @@ module.exports = {
   },
   rules: {
     'import/no-extraneous-dependencies': 'off',
+    'jsx-a11y/control-has-associated-label': 'off',
     'func-names': 'off',
     'no-console': 'off',
     'no-param-reassign': 'off',

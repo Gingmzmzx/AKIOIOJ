@@ -1,6 +1,7 @@
 import base64
 import hashlib
 import hoedown
+# import markdown as mdparser
 import jinja2
 import markupsafe
 import re
@@ -36,6 +37,23 @@ def fs_replace(m):
 
 def markdown(text):
   text = FS_RE.sub(fs_replace, text)
+  # md_ctx = mdparser.markdown(text,
+  #   extensions=[
+  #       'markdown.extensions.toc',
+  #       'markdown.extensions.extra',
+  #       'markdown.extensions.admonition',
+  #       'markdown.extensions.codehilite',
+  #       'markdown.extensions.meta',
+  #       # 'markdown_katex',
+  #   ],
+  #   extension_configs={
+  #       'markdown_katex': {
+  #           'no_inline_svg': True,      # fix for WeasyPrint
+  #           'insert_fonts_css': True,
+  #       },
+  #   }
+  # )
+  # return markupsafe.Markup(md_ctx)
   return markupsafe.Markup(hoedown.html(
       text, extensions=MARKDOWN_EXTENSIONS, render_flags=MARKDOWN_RENDER_FLAGS))
 

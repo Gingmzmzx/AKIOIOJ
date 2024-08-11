@@ -90,9 +90,12 @@ class DomainMainHandler(contest.ContestStatusMixin, base.Handler):
     dudocs, _, _ = await pagination.paginate(
         domain.get_multi_user(domain_id=self.domain_id, rp={'$gt': 0.0}).sort([('rank', 1)]),
         1, self.USERS_PER_PAGE)
-    udict, dudict = await asyncio.gather(
+    rudict, rdudict = await asyncio.gather(
         user.get_dict(dudoc['uid'] for dudoc in dudocs),
         domain.get_dict_user_by_uid(self.domain_id, (dudoc['uid'] for dudoc in dudocs)))
+    udict, dudict = await asyncio.gather(
+        user.get_dict(ddoc['owner_uid'] for ddoc in ddocs),
+        domain.get_dict_user_by_uid(self.domain_id, (ddoc['owner_uid'] for ddoc in ddocs)))
     
     if self.has_priv(builtin.PRIV_USER_PROFILE):
       rnd = random.Random()
@@ -111,7 +114,8 @@ class DomainMainHandler(contest.ContestStatusMixin, base.Handler):
                 ddocs=ddocs, vndict=vndict,
                 udict=udict, dudict=dudict, datetime_stamp=self.datetime_stamp,
                 blessing=builtin.BLESSING, blessing_content=builtin.BLESSING_CONTENT,
-                lucknum=lucknum, dudoc=dudoc, dudocs=dudocs, udoc=self.user, users_per_page=self.USERS_PER_PAGE)
+                lucknum=lucknum, dudoc=dudoc, dudocs=dudocs, udoc=self.user, users_per_page=self.USERS_PER_PAGE,
+                rudict=rudict, rdudict=rdudict)
 
 
 @app.route('/domain', 'domain_manage')
