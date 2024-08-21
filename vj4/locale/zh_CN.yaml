@@ -7,6 +7,38 @@ GenerateTestCase: 生成测试数据
 Download Problem Data: 下载测试数据
 Login to Download Problem Data: 登录以下载测试数据
 Tools: 工具
+admin_dashboard: 管理员面板
+admin_user: 管理用户
+admin_privilege: 管理特权
+Welcome to AKIOI OJ Admin Dashboard: 欢迎来到管理员面板
+"User {0}: Privilege": "用户{0}的特权"
+Edit Tags: 编辑TAG
+Edit Privilege: 编辑特权
+Privileges: 特权
+Update Privilege: 更新特权
+Badge alternate with spaces: TAG（以空格相间）
+Set badge: 设置TAG
+This user has no privileges (banned user): 这个用户没有任何权限（封禁用户）
+Modifying User Privileges: 修改用户特权
+Modifying User Permissions: 修改用户权限
+Use Profile: 使用个人资料
+Register User: 注册用户
+View problem data: 查看题目数据
+View pretest data: 查看自测数据
+View your own self-test data: 查看自己的自测数据
+View Submitted Code: 查看评测记录的代码
+View hidden record: 查看隐藏的评测记录
+Write Record: 写入评测记录
+View All Domains: 查看所有域
+Manage All Domains: 管理所有域
+View User Secret: 查看用户Secret
+View judge statistics: 查看评测数据
+Create File: 创建文件
+File space unlimited: 无限制的文件空间
+Delete File: 删除文件
+Delete yourself file: 删除自己文件
+Cheater Manager: 作弊管理者
+Use Admin Dashboard: 使用管理员面板
 API: API
 about: 关于
 About: 关于

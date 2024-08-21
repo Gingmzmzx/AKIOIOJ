@@ -219,7 +219,7 @@ class UserDetailHandler(base.Handler, UserSettingsMixin):
       vndict = {}
       dcount = 0
     
-    set_cheat_perm = self.has_perm(builtin.PERM_USER_SET_CHEAT)
+    set_cheat_perm = self.has_priv(builtin.PRIV_USER_SET_CHEAT)
 
     self.render('user_detail.html', is_self_profile=is_self_profile,
                 udoc=udoc, dudoc=dudoc, sdoc=sdoc,
@@ -233,7 +233,7 @@ class UserDetailHandler(base.Handler, UserSettingsMixin):
 class UserCheatHandler(base.Handler, UserSettingsMixin):
   @base.route_argument
   @base.sanitize
-  @base.require_perm(builtin.PERM_USER_SET_CHEAT)
+  @base.require_priv(builtin.PRIV_USER_SET_CHEAT)
   async def get(self, *, uid: int):
     udoc = await user.get_by_uid(uid)
     if not udoc:

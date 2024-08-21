@@ -10,6 +10,8 @@ export default class Dialog {
       $action: null,
       ...options,
     };
+    console.log("this.options.$action", this.options.$action);
+
     this.$dom = $(tpl`
       <div class="dialog withBg ${this.options.classes}" style="display:none">
         <div class="dialog__content">

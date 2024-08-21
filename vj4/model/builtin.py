@@ -91,7 +91,7 @@ PERM_EDIT_TRAINING_SELF = 1 << 49
 PERM_VIEW_RANKING = 1 << 59
 
 # User.
-PERM_USER_SET_CHEAT = 1 << 60
+PERM_USER_SET_CHEAT = 1 << 60  # 已废弃，被PRIV_USER_SET_CHEAT替代
 
 PERM_ALL = -1
 
@@ -188,7 +188,42 @@ PRIV_CREATE_FILE = 1 << 16
 PRIV_UNLIMITED_QUOTA = 1 << 17
 PRIV_DELETE_FILE = 1 << 18
 PRIV_DELETE_FILE_SELF = 1 << 19
+PRIV_USER_SET_CHEAT = 1 << 20
+PRIV_ADMIN = 1 << 21
 PRIV_ALL = -1
+
+Privilege = collections.namedtuple('Privilege',
+                                    ['family', 'key', 'desc'])
+
+PRIVS = [
+    Privilege("priv_none", PRIV_NONE, "This user has no privileges (banned user)"),
+    Privilege("priv_set_priv", PRIV_SET_PRIV, "Modifying User Privileges"),
+    Privilege("priv_set_perm", PRIV_SET_PERM, "Modifying User Permissions"),
+    Privilege("priv_user_profile", PRIV_USER_PROFILE, "Use Profile"),
+    Privilege("priv_register_user", PRIV_REGISTER_USER, "Register User"),
+    Privilege("priv_read_problem_data", PRIV_READ_PROBLEM_DATA, "View problem data"),
+    Privilege("priv_read_pretest_data", PRIV_READ_PRETEST_DATA, "View pretest data"),
+    Privilege("priv_read_pretest_data_self", PRIV_READ_PRETEST_DATA_SELF, "View your own self-test data"),
+    Privilege("priv_read_record_code", PRIV_READ_RECORD_CODE, "View Submitted Code"),
+    Privilege("priv_view_hidden_record", PRIV_VIEW_HIDDEN_RECORD, "View hidden record"),
+    Privilege("priv_write_record", PRIV_WRITE_RECORD, "Write Record"),
+    Privilege("priv_create_domain", PRIV_CREATE_DOMAIN, "Create Domain"),
+    Privilege("priv_view_all_domain", PRIV_VIEW_ALL_DOMAIN, "View All Domains"),
+    Privilege("priv_manage_all_domain", PRIV_MANAGE_ALL_DOMAIN, "Manage All Domains"),
+    Privilege("priv_rejudge", PRIV_REJUDGE, "Rejudge"),
+    Privilege("priv_view_user_secret", PRIV_VIEW_USER_SECRET, "View User Secret"),
+    Privilege("priv_view_judge_statistics", PRIV_VIEW_JUDGE_STATISTICS, "View judge statistics"),
+    Privilege("priv_create_file", PRIV_CREATE_FILE, "Create File"),
+    Privilege("priv_unlimited_quota", PRIV_UNLIMITED_QUOTA, "File space unlimited"),
+    Privilege("priv_delete_file", PRIV_DELETE_FILE, "Delete File"),
+    Privilege("priv_delete_file_self", PRIV_DELETE_FILE_SELF, "Delete yourself file"),
+    Privilege("priv_user_set_cheat", PRIV_USER_SET_CHEAT, "Cheater Manager"),
+    Privilege("priv_admin", PRIV_ADMIN, "Use Admin Dashboard"),
+]
+
+PRIVS_BY_FAMILY = collections.OrderedDict(
+    (f, list(g)) for f, g in itertools.groupby(PRIVS, key=lambda p: p.family))
+PRIVS_BY_KEY = collections.OrderedDict(zip((s.key for s in PRIVS), PRIVS))
 
 DEFAULT_PRIV = PRIV_USER_PROFILE | PRIV_CREATE_DOMAIN | PRIV_CREATE_FILE | PRIV_DELETE_FILE_SELF
 JUDGE_PRIV = (PRIV_USER_PROFILE

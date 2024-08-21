@@ -30,7 +30,6 @@ const page = new NamedPage('domain_manage_user', () => {
     },
   });
   addUserDialog.clear = function () {
-    addUserSelector.clear();
     this.$dom.find('[name="role"]').val('');
     return this;
   };

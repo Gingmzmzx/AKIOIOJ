@@ -85,6 +85,7 @@ class Application(web.Application):
     smallcache.init()
 
     # Load views.
+    from vj4.handler import admin
     from vj4.handler import contest
     from vj4.handler import discussion
     from vj4.handler import domain

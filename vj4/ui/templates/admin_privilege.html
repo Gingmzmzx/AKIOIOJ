@@ -1,0 +1,49 @@
+{% extends "admin_base.html" %}
+{% block admin_content %}
+<form method="post">
+<div class="section">
+  <div class="section__header">
+    <h1 class="section__title">{{ _('User {0}: Privilege').format(udoc['uname']) }}</h1>
+  </div>
+  <div class="section__body no-padding admin-users">
+    <table class="data-table">
+      <colgroup>
+        <col class="col--description">
+        <col class="col--p">
+      </colgroup>
+      <thead>
+        <tr>
+          <th class="col--description">{{ _('Privileges') }}</th>
+          <th class="col--p"><span data-tooltip="{{ _('User') }}">{{ _('User') }}</span></th>
+        </tr>
+      </thead>
+    {% for family, privs in vj4.model.builtin.PRIVS_BY_FAMILY.items() %}
+      <tbody>
+      {% for priv in privs %}
+        <tr>
+          <td class="col--description">
+            {{ _(priv.desc) }}
+          </td>
+          <td class="col--p">
+            <label class="compact checkbox">
+              <input data-checkbox-range name="priv" value="{{ priv.key }}" type="checkbox"{% if bitand(udoc['priv'], priv.key) == priv.key %} checked{% endif %}>
+            </label>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    {% endfor %}
+    </table>
+  </div>
+  <div class="section__body">
+    <input type="hidden" name="csrf_token" value="{{ handler.csrf_token }}">
+    <button class="rounded primary button" role="submit">
+      {{ _('Update Privilege') }}
+    </button>
+    <button type="button" class="rounded button" onclick="window.history.go(-1)">
+      {{ _('Cancel') }}
+    </button>
+  </div>
+</div>
+</form>
+{% endblock %}

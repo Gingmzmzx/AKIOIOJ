@@ -155,6 +155,16 @@ async def set_cheat(uid: int, status: bool):
 
 
 @argmethod.wrap
+async def set_tags(uid: int, tags: list):
+  """Set the user's tags"""
+  coll = db.coll('user')
+  doc = await coll.find_one_and_update(filter={'_id': uid},
+                                       update={'$set': {"tags": tags}},
+                                       return_document=ReturnDocument.AFTER)
+  return doc
+
+
+@argmethod.wrap
 async def change_password(uid: int, current_password: str, password: str):
   """Change password. Returns doc or None."""
   doc = await check_password_by_uid(uid, current_password)

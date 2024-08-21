@@ -14,7 +14,7 @@
           </div>
           <div class="large-3 columns">
             {% if handler.has_priv(vj4.model.builtin.PRIV_USER_PROFILE) %}
-              <h2>欢迎回来，</h2>{{ user.render_inline(udoc, dudoc=dudoc) }}
+              <h2>欢迎回来，</h2>{{ user.render_inline(udoc, dudoc=wdudoc) }}
               <h4>今日人品 <b style="color: {% if lucknum > 75 %}#52C41A{% elif lucknum > 25 %}#FADB14{% else %}#E74C3C{% endif %}; ">{{ lucknum }}</b></h4>
             {% else %}
               <h2 style="text-align: center;">您还没有登录</h2>

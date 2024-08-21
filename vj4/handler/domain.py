@@ -101,10 +101,10 @@ class DomainMainHandler(contest.ContestStatusMixin, base.Handler):
       rnd = random.Random()
       rnd.seed(int(datetime.date.today().strftime("%y%m%d")) + int(self.user["_id"]))
       lucknum = rnd.randint(1, 100)
-      dudoc = await domain.get_user(self.domain_id, self.user['_id'])
+      wdudoc = await domain.get_user(self.domain_id, self.user['_id'])
     else:
       lucknum = "未登录"
-      dudoc = {}
+      wdudoc = {}
 
     self.render('domain_main.html', discussion_nodes=await discussion.get_nodes(self.domain_id),
                 tdocs=tdocs, tsdict=tsdict,
@@ -114,7 +114,7 @@ class DomainMainHandler(contest.ContestStatusMixin, base.Handler):
                 ddocs=ddocs, vndict=vndict,
                 udict=udict, dudict=dudict, datetime_stamp=self.datetime_stamp,
                 blessing=builtin.BLESSING, blessing_content=builtin.BLESSING_CONTENT,
-                lucknum=lucknum, dudoc=dudoc, dudocs=dudocs, udoc=self.user, users_per_page=self.USERS_PER_PAGE,
+                lucknum=lucknum, wdudoc=wdudoc, dudocs=dudocs, udoc=self.user, users_per_page=self.USERS_PER_PAGE,
                 rudict=rudict, rdudict=rdudict)
 
 
