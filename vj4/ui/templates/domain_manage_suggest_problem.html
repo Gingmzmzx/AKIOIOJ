@@ -1,0 +1,81 @@
+{% import "components/user.html" as user %}
+{% extends "domain_base.html" %}
+{% block domain_content %}
+<div style="display: none" class="dialog__body--add">
+  <div>
+    <div class="row"><div class="columns">
+      <h1>{{ _('Add Problem') }}</h1>
+    </div></div>
+    <div class="row">
+      <div class="medium-6 columns">
+        <label>
+          {{ _('Problem ID') }}
+          <input name="pid" type="text" class="textbox" autocomplete="off" data-autofocus>
+        </label>
+      </div>
+      <div class="medium-6 columns">
+        <label>
+          {{ _('Display Title') }}
+          <input name="title" type="text" class="textbox" autocomplete="off" data-autofocus>
+        </label>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+    <div class="section__header">
+      <h1 class="section__title">{{ _('Recommended Problems') }}</h1>
+      <div class="section__tools">
+        <button class="primary rounded button" name="add_problem">{{ _('Add Recommended Problems') }}</button>
+      </div>
+    </div>
+    {{ noscript_note.render() }}
+    <div class="section__body no-padding domain-users">
+    {% if not spdocs %}
+    {{ nothing.render('Sorry, there is no recommended problems.') }}
+    {% else %}
+      <table class="data-table">
+        <colgroup>
+          <col class="col--checkbox">
+          <col class="col--pid">
+          <col class="col--title">
+          <col class="col--action">
+        </colgroup>
+        <thead>
+          <tr>
+            <th class="col--checkbox">
+              <label class="compact checkbox">
+                <input type="checkbox" name="select_all" data-checkbox-toggle="user">
+              </label>
+            </th>
+            <th class="col--pid">{{ _('Problem ID') }}</th>
+            <th class="col--title">{{ _('Title') }}</th>
+            <th class="col--action">{{ _('Action') }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for spdoc in spdocs %}
+          <tr data-pid="{{ spdoc['pid'] }}">
+              <td class="col--checkbox">
+                <label class="compact checkbox">
+                  <input type="checkbox">
+                </label>
+              </td>
+              <td class="col--pid">
+                {{ spdoc['pid'] }}
+              </td>
+              <td class="col--title">
+                {{ spdoc['title'] }}
+              </td>
+              <td class="col--action">
+                <a name="delete">{{ _("Delete") }}</a>
+              </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}

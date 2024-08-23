@@ -97,6 +97,8 @@ class DomainMainHandler(contest.ContestStatusMixin, base.Handler):
         user.get_dict(ddoc['owner_uid'] for ddoc in ddocs),
         domain.get_dict_user_by_uid(self.domain_id, (ddoc['owner_uid'] for ddoc in ddocs)))
     
+    spdocs = await domain.get_suggest_problem(self.domain_id)
+    
     if self.has_priv(builtin.PRIV_USER_PROFILE):
       rnd = random.Random()
       rnd.seed(int(datetime.date.today().strftime("%y%m%d")) + int(self.user["_id"]))
@@ -115,7 +117,7 @@ class DomainMainHandler(contest.ContestStatusMixin, base.Handler):
                 udict=udict, dudict=dudict, datetime_stamp=self.datetime_stamp,
                 blessing=builtin.BLESSING, blessing_content=builtin.BLESSING_CONTENT,
                 lucknum=lucknum, wdudoc=wdudoc, dudocs=dudocs, udoc=self.user, users_per_page=self.USERS_PER_PAGE,
-                rudict=rudict, rdudict=rdudict)
+                rudict=rudict, rdudict=rdudict, spdocs=spdocs)
 
 
 @app.route('/domain', 'domain_manage')
@@ -391,3 +393,34 @@ class DomainSearchHandler(base.Handler):
     for i in range(len(ddocs)):
       self.modify_ddoc(ddocs, i)
     self.json(ddocs)
+
+
+@app.route('/domain/suggest_problem', 'domain_manage_suggest_problem')
+class AdminUserHandler(base.OperationHandler):
+  @base.require_perm(builtin.PERM_EDIT_SUGGESTED_PROBLEM)
+  async def get(self):
+    spdocs = await domain.get_suggest_problem(self.domain_id)
+
+    self.render('domain_manage_suggest_problem.html', spdocs=spdocs)
+
+  @base.require_perm(builtin.PERM_EDIT_SUGGESTED_PROBLEM)
+  @base.require_csrf_token
+  @base.sanitize
+  async def post_add_problem(self, *, pid: int, title: str):
+    spdocs = await domain.get_suggest_problem(self.domain_id)
+    spdocs.append({"pid":pid, "title":title})
+    await domain.set_suggest_problem(self.domain_id, spdocs)
+    self.json_or_redirect(self.url)
+
+  @base.require_perm(builtin.PERM_EDIT_SUGGESTED_PROBLEM)
+  @base.require_csrf_token
+  @base.sanitize
+  async def post_del_problem(self, *, pid: int):
+    spdocs = await domain.get_suggest_problem(self.domain_id)
+    for spdoc in spdocs:
+      if spdoc.get('pid') == pid:
+        spdocs.remove(spdoc)
+    await domain.set_suggest_problem(self.domain_id, spdocs)
+    self.json_or_redirect(self.url)
+
+

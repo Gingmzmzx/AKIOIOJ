@@ -88,6 +88,29 @@ def get_pending(**kwargs):
 
 
 @argmethod.wrap
+async def set_suggest_problem(domain_id: str, problem_list: list):
+  for domain in builtin.DOMAINS:
+    if domain['_id'] == domain_id:
+      return await system.set_suggest_problem(problem_list)
+  coll = db.coll("domain")
+  doc = await coll.find_one_and_update(filter={'_id': domain_id},
+                                       update={'$set': {'suggested_problem': problem_list}})
+  return doc.get('suggested_problem', [])
+
+
+@argmethod.wrap
+async def get_suggest_problem(domain_id: str):
+  for domain in builtin.DOMAINS:
+    if domain['_id'] == domain_id:
+      return await system.get_suggest_problem()
+  coll = db.coll('domain')
+  ddoc = await coll.find_one(domain_id)
+  if not ddoc:
+    raise error.DomainNotFoundError(domain_id)
+  return ddoc.get('suggested_problem', [])
+
+
+@argmethod.wrap
 async def edit(domain_id: str, **kwargs):
   for domain in builtin.DOMAINS:
     if domain['_id'] == domain_id:

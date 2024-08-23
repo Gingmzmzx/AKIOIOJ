@@ -12,6 +12,21 @@ EXPECTED_DB_VERSION = 1
 
 
 @argmethod.wrap
+async def set_suggest_problem(problem_list):
+  coll = db.coll("system")
+  doc = await coll.find_one_and_update(filter={'_id': 'suggest_problem'},
+                                       update={'$set': {'value': problem_list}})
+  return doc['value']
+
+
+@argmethod.wrap
+async def get_suggest_problem():
+  coll = db.coll("system")
+  doc = await coll.find_one({"_id":"suggest_problem"})
+  return doc['value']
+
+
+@argmethod.wrap
 async def inc_user_counter():
   """Increments the user counter.
 
@@ -133,6 +148,8 @@ async def ensure_indexes():
   await coll.update_one(filter={'_id': 'user_counter'},
                         update={'$setOnInsert': {'value': 1}},
                         upsert=True)
+  await coll.update_one(filter={'_id': 'suggest_problem'},
+                        update={'$setOnInsert': {'value': []}}, upsert=True)
 
 
 if __name__ == '__main__':

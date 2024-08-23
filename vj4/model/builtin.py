@@ -89,9 +89,7 @@ PERM_EDIT_TRAINING_SELF = 1 << 49
 
 # Ranking.
 PERM_VIEW_RANKING = 1 << 59
-
-# User.
-PERM_USER_SET_CHEAT = 1 << 60  # 已废弃，被PRIV_USER_SET_CHEAT替代
+PERM_EDIT_SUGGESTED_PROBLEM = 1 << 60
 
 PERM_ALL = -1
 
@@ -103,6 +101,7 @@ PERMS = [
     Permission('perm_general', PERM_EDIT_PERM, 'Edit permissions of a role'),
     Permission('perm_general', PERM_MOD_BADGE, 'Show MOD badge'),
     Permission('perm_general', PERM_EDIT_DESCRIPTION, 'Edit description of this domain'),
+    Permission('perm_general', PERM_EDIT_SUGGESTED_PROBLEM, 'Edit suggested problems of this domain'),
     Permission('perm_problem', PERM_CREATE_PROBLEM, 'Create problems'),
     Permission('perm_problem', PERM_EDIT_PROBLEM, 'Edit problems'),
     Permission('perm_problem', PERM_EDIT_PROBLEM_SELF, 'Edit own problems'),
@@ -159,7 +158,6 @@ PERMS = [
     Permission('perm_training', PERM_EDIT_TRAINING, 'Edit training plans'),
     Permission('perm_training', PERM_EDIT_TRAINING_SELF, 'Edit own training plans'),
     Permission('perm_ranking', PERM_VIEW_RANKING, 'View ranking'),
-    Permission('perm_user', PERM_USER_SET_CHEAT, 'Set user as Cheater'),
 ]
 
 PERMS_BY_FAMILY = collections.OrderedDict(

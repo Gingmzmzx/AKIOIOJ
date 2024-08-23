@@ -6,21 +6,22 @@
 </div>
 {% endif %}
 
+{% if spdocs %}
 <div class="section side">
   <div class="section__header">
     <h1 class="section__title">{{ _('Recommended Problems') }}</h1>
   </div>
   <div class="section__body">
     <ol class="chip-list">
-      <li class="chip-list__item"><a class="typo-a" href="{{ reverse_url('problem_detail', pid=1004) }}">P1004 灰灰的真凶</a></li>
-      <li class="chip-list__item"><a class="typo-a" href="{{ reverse_url('problem_detail', pid=1009) }}">P1009 灰灰的飞机</a></li>
-      <li class="chip-list__item"><a class="typo-a" href="{{ reverse_url('problem_detail', pid=1029) }}">P1029 王老师的序列</a></li>
-      <li class="chip-list__item"><a class="typo-a" href="{{ reverse_url('problem_detail', pid=1034) }}">P1034 灰灰的Mython</a></li>
-      <li class="chip-list__item"><a class="typo-a" href="{{ reverse_url('problem_detail', pid=1036) }}">P1036 别烦我，孩子</a></li>
+      {% for spdoc in spdocs %}
+      <li class="chip-list__item"><a class="typo-a" href="{{ reverse_url('problem_detail', pid=spdoc['pid']) }}">P{{ spdoc['pid'] }} {{ spdoc['title'] }}</a></li>
+      {% endfor %}
     </ol>
   </div>
 </div>
+{% endif %}
 
+{% if domain_id == vj4.model.builtin.DOMAIN_ID_SYSTEM %}
 <div class="section side">
   <div class="section__header">
     <h1 class="section__title">{{ _('Tools') }}</h1>
@@ -35,3 +36,4 @@
     </ul>
   </div>
 </div>
+{% endif %}
