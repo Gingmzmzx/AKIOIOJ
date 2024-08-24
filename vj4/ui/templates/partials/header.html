@@ -3,16 +3,19 @@
     {% if domain_id == vj4.model.builtin.DOMAIN_ID_SYSTEM %}
       <a class="header__logo" href="{{ reverse_url('domain_main', domain_id=vj4.model.builtin.DOMAIN_ID_SYSTEM) }}" target="_self"></a>
     {% else %}
-    <div class="clearfix">
       {% if domain['gravatar'] %}
-        <div class="float-left"><img class="header__logo--gravatar" src="{{ domain['gravatar'] }}" /></div>
-      {% endif %}
-      <div class="float-right">
+        <div class="clearfix">
+            <div class="float-left"><img class="header__logo--gravatar" src="{{ domain['gravatar'] }}" /></div>
+          <div class="float-right">
+            <div class="header__logo--domain"><a href="{{ reverse_url('domain_main') }}" target="_self">{{ domain['name'] }}</a></div>
+            <div class="header__logo--system"><a href="{{ reverse_url('domain_main', domain_id=vj4.model.builtin.DOMAIN_ID_SYSTEM) }}" target="_blank">Powered by AKIOI OJ</a></div>
+          </div>
+        </div>
+      {% else %}
         <div class="header__logo--domain"><a href="{{ reverse_url('domain_main') }}" target="_self">{{ domain['name'] }}</a></div>
         <div class="header__logo--system"><a href="{{ reverse_url('domain_main', domain_id=vj4.model.builtin.DOMAIN_ID_SYSTEM) }}" target="_blank">Powered by AKIOI OJ</a></div>
-      </div>
-    </div>
       {% endif %}
+    {% endif %}
   </div></div></div>
   {% include "partials/path.html" %}
 </div>
