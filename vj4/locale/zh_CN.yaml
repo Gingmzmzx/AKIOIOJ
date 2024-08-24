@@ -44,7 +44,16 @@ Add Problem: 添加题目
 Problem ID: 题目ID
 Display Title: 展示标题
 Add Recommended Problems: 添加推荐题目
-Sorry, there is no recommended problems.: 本域中没有推荐题目
+"Sorry, there is no recommended problems.": 本域中没有推荐题目
+domain_manage_swiper: 域轮播图
+"Welcome back, ": 欢迎回来，
+"Today's Character": 今日人品
+You are not logged in: 您还没有登录
+Add Swiper Image: 添加轮播图片
+Image URL (Unique): 图片地址（唯一的）
+The URL to jump to when clicked: 点击后跳转地址
+Swiper Images: 轮播图
+"Sorry, there is no swiper images.": 本域中没有轮播图
 API: API
 about: 关于
 About: 关于
@@ -467,6 +476,7 @@ View this domain: 查看此域
 Edit permissions of a role: 修改角色权限
 Show MOD badge: 展示 MOD 徽章
 Edit description of this domain: 修改此域描述
+Edit suggested problems of this domain: 管理该域的推荐题目
 Create problems: 创建题目
 Edit problems: 修改题目
 Edit own problems: 修改自己的题目

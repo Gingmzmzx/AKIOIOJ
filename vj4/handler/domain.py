@@ -98,6 +98,7 @@ class DomainMainHandler(contest.ContestStatusMixin, base.Handler):
         domain.get_dict_user_by_uid(self.domain_id, (ddoc['owner_uid'] for ddoc in ddocs)))
     
     spdocs = await domain.get_suggest_problem(self.domain_id)
+    sdocs = await domain.get_swiper(self.domain_id)
     
     if self.has_priv(builtin.PRIV_USER_PROFILE):
       rnd = random.Random()
@@ -117,7 +118,8 @@ class DomainMainHandler(contest.ContestStatusMixin, base.Handler):
                 udict=udict, dudict=dudict, datetime_stamp=self.datetime_stamp,
                 blessing=builtin.BLESSING, blessing_content=builtin.BLESSING_CONTENT,
                 lucknum=lucknum, wdudoc=wdudoc, dudocs=dudocs, udoc=self.user, users_per_page=self.USERS_PER_PAGE,
-                rudict=rudict, rdudict=rdudict, spdocs=spdocs)
+                rudict=rudict, rdudict=rdudict,
+                spdocs=spdocs, sdocs=sdocs)
 
 
 @app.route('/domain', 'domain_manage')
@@ -424,3 +426,30 @@ class AdminUserHandler(base.OperationHandler):
     self.json_or_redirect(self.url)
 
 
+@app.route('/domain/swiper', 'domain_manage_swiper')
+class AdminUserHandler(base.OperationHandler):
+  @base.require_perm(builtin.PERM_EDIT_SWIPER)
+  async def get(self):
+    sdocs = await domain.get_swiper(self.domain_id)
+
+    self.render('domain_manage_swiper.html', sdocs=sdocs)
+
+  @base.require_perm(builtin.PERM_EDIT_SWIPER)
+  @base.require_csrf_token
+  @base.sanitize
+  async def post_add_image(self, *, src: str, href: str):
+    sdocs = await domain.get_swiper(self.domain_id)
+    sdocs.append({"src":src, "href":href})
+    await domain.set_swiper(self.domain_id, sdocs)
+    self.json_or_redirect(self.url)
+
+  @base.require_perm(builtin.PERM_EDIT_SWIPER)
+  @base.require_csrf_token
+  @base.sanitize
+  async def post_del_image(self, *, src: str):
+    sdocs = await domain.get_swiper(self.domain_id)
+    for sdoc in sdocs:
+      if sdoc.get('src') == src:
+        sdocs.remove(sdoc)
+    await domain.set_swiper(self.domain_id, sdocs)
+    self.json_or_redirect(self.url)

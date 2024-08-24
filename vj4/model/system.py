@@ -27,6 +27,21 @@ async def get_suggest_problem():
 
 
 @argmethod.wrap
+async def set_swiper(swiper_list):
+  coll = db.coll("system")
+  doc = await coll.find_one_and_update(filter={'_id': 'swiper'},
+                                       update={'$set': {'value': swiper_list}})
+  return doc['value']
+
+
+@argmethod.wrap
+async def get_swiper():
+  coll = db.coll("system")
+  doc = await coll.find_one({"_id":"swiper"})
+  return doc['value']
+
+
+@argmethod.wrap
 async def inc_user_counter():
   """Increments the user counter.
 
@@ -149,6 +164,8 @@ async def ensure_indexes():
                         update={'$setOnInsert': {'value': 1}},
                         upsert=True)
   await coll.update_one(filter={'_id': 'suggest_problem'},
+                        update={'$setOnInsert': {'value': []}}, upsert=True)
+  await coll.update_one(filter={'_id': 'swiper'},
                         update={'$setOnInsert': {'value': []}}, upsert=True)
 
 

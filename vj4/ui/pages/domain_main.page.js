@@ -3,21 +3,20 @@ import VSwiper from 'vj/components/swiper';
 
 const page = new NamedPage('domain_main', () => {
   $(function(){
-    if ($("#swiper")){
-      const swiper = new VSwiper("#swiper", [
-        {
-          href: "/contest/66b31c4e4e6a230001d8011b",
-          src: "https://cdn.luogu.com.cn/upload/image_hosting/0l7lzw47.png"
-        },
-        {
-          href: "#",
-          src: "https://cdn.luogu.com.cn/upload/image_hosting/k7o1musn.png"
-        },
-        {
-          href: "#",
-          src: "https://cdn.luogu.com.cn/upload/image_hosting/wqgk9c1v.png"
-        }
-      ]);
+    var swiper_dom = $("#swiper_list");
+    if (swiper_dom && $("#swiper")){
+      console.log("Loading swiper...");
+
+      var swiper_list = [];
+      swiper_dom.children().each((idx, element) => {
+        swiper_list.push({
+          href: element.getAttribute("data-href"),
+          src: element.getAttribute("data-src"),
+        })
+      });
+      console.log("Swiper_list:", swiper_list);
+
+      const swiper = new VSwiper("#swiper", swiper_list);
     }
   });
 });

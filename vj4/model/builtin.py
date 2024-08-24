@@ -19,6 +19,8 @@ PERM_VIEW = 1 << 0
 PERM_EDIT_PERM = 1 << 1
 PERM_MOD_BADGE = 1 << 2
 PERM_EDIT_DESCRIPTION = 1 << 3
+PERM_EDIT_SUGGESTED_PROBLEM = 1 << 60
+PERM_EDIT_SWIPER = 1 << 61
 
 # Problem and Record.
 PERM_CREATE_PROBLEM = 1 << 4
@@ -89,7 +91,6 @@ PERM_EDIT_TRAINING_SELF = 1 << 49
 
 # Ranking.
 PERM_VIEW_RANKING = 1 << 59
-PERM_EDIT_SUGGESTED_PROBLEM = 1 << 60
 
 PERM_ALL = -1
 
@@ -102,6 +103,7 @@ PERMS = [
     Permission('perm_general', PERM_MOD_BADGE, 'Show MOD badge'),
     Permission('perm_general', PERM_EDIT_DESCRIPTION, 'Edit description of this domain'),
     Permission('perm_general', PERM_EDIT_SUGGESTED_PROBLEM, 'Edit suggested problems of this domain'),
+    Permission('perm_general', PERM_EDIT_SWIPER, 'Edit swiper images of this domain'),
     Permission('perm_problem', PERM_CREATE_PROBLEM, 'Create problems'),
     Permission('perm_problem', PERM_EDIT_PROBLEM, 'Edit problems'),
     Permission('perm_problem', PERM_EDIT_PROBLEM_SELF, 'Edit own problems'),

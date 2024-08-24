@@ -4,20 +4,24 @@
 {% block content %}
 <div class="row">
   <div class="large-9 columns">
-    {% if domain_id == vj4.model.builtin.DOMAIN_ID_SYSTEM %}
+    {% if sdocs %}
     <div class="section">
       <div class="section__body typo">
         <div class="row">
           <div class="large-9 columns">
-            <!-- Slider main container -->
+            <div id="swiper_list" style="display:none;">
+              {% for sdoc in sdocs %}
+              <div data-href="{{ sdoc['href'] }}" data-src="{{ sdoc['src'] }}"></div>
+              {% endfor %}
+            </div>
             <div id="swiper" class="swiper"></div>
           </div>
           <div class="large-3 columns">
             {% if handler.has_priv(vj4.model.builtin.PRIV_USER_PROFILE) %}
-              <h2>欢迎回来，</h2>{{ user.render_inline(udoc, dudoc=wdudoc) }}
-              <h4>今日人品 <b style="color: {% if lucknum > 75 %}#52C41A{% elif lucknum > 25 %}#FADB14{% else %}#E74C3C{% endif %}; ">{{ lucknum }}</b></h4>
+              <h2>{{ _("Welcome back, ") }}</h2>{{ user.render_inline(udoc, dudoc=wdudoc) }}
+              <h4>{{ _("Today's Character") }} <b style="color: {% if lucknum > 75 %}#52C41A{% elif lucknum > 25 %}#FADB14{% else %}#E74C3C{% endif %}; ">{{ lucknum }}</b></h4>
             {% else %}
-              <h2 style="text-align: center;">您还没有登录</h2>
+              <h2 style="text-align: center;">{{ _("You are not logged in") }}</h2>
               <input type="button" name="nav_login" value="{{ _('Sign In') }}" class="expanded rounded primary button">
             {% endif %}
           </div>

@@ -111,6 +111,29 @@ async def get_suggest_problem(domain_id: str):
 
 
 @argmethod.wrap
+async def set_swiper(domain_id: str, swiper_list: list):
+  for domain in builtin.DOMAINS:
+    if domain['_id'] == domain_id:
+      return await system.set_swiper(swiper_list)
+  coll = db.coll("domain")
+  doc = await coll.find_one_and_update(filter={'_id': domain_id},
+                                       update={'$set': {'swiper': swiper_list}})
+  return doc.get('swiper', [])
+
+
+@argmethod.wrap
+async def get_swiper(domain_id: str):
+  for domain in builtin.DOMAINS:
+    if domain['_id'] == domain_id:
+      return await system.get_swiper()
+  coll = db.coll('domain')
+  ddoc = await coll.find_one(domain_id)
+  if not ddoc:
+    raise error.DomainNotFoundError(domain_id)
+  return ddoc.get('swiper', [])
+
+
+@argmethod.wrap
 async def edit(domain_id: str, **kwargs):
   for domain in builtin.DOMAINS:
     if domain['_id'] == domain_id:

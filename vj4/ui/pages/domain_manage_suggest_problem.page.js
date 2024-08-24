@@ -8,7 +8,7 @@ import request from 'vj/utils/request';
 
 const page = new NamedPage('domain_manage_suggest_problem', () => {
   const AddSProblemDialog = new ActionDialog({
-    $body: $('.dialog__body--add > div'),
+    $body: $('.dialog__body--addSuggestProblem > div'),
     onDispatch(action) {
       const $pid = AddSProblemDialog.$dom.find('[name="pid"]');
       const $title = AddSProblemDialog.$dom.find('[name="title"]');
