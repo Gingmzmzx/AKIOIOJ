@@ -73,7 +73,7 @@ Bio Visibility: 个人简介可见性
 Blog: 博客
 Boom!: 炸了！
 Browser: 浏览器
-? By signing up a Vijos universal account, you can submit code and join discussions in all online
+? By signing up a AKIOI OJ universal account, you can submit code and join discussions in all online
   judging services provided by us.
 : 注册一个 AKIOI OJ 通用账户，您就可以在我们提供的所有在线评测服务上提交代码、参与讨论。
 Cheater: 作弊者
@@ -131,10 +131,10 @@ Forgot password or username?: 忘记密码或者用户名？
 Gender: 性别
 Gender Visibility: 性别可见性
 Gravatar Email: 头像图片地址
-'Hello! You can click following link to sign up your Vijos account:': 您好！您可以点击以下链接来注册您的 AKIOI OJ 账户：
-'Hello, {0}! You can click following link to reset the password of your Vijos account:': 您好，{0}！您可以点击以下链接来重置您
+'Hello! You can click following link to sign up your AKIOI OJ account:': 您好！您可以点击以下链接来注册您的 AKIOI OJ 账户：
+'Hello, {0}! You can click following link to reset the password of your AKIOI OJ account:': 您好，{0}！您可以点击以下链接来重置您
   AKIOI OJ 账户的密码：
-'Hello, {0}! You can click following link to active your new email of your Vijos account:': 您好，{0}！您可以点击以下链接来激活您
+'Hello, {0}! You can click following link to active your new email of your AKIOI OJ account:': 您好，{0}！您可以点击以下链接来激活您
   AKIOI OJ 账户的新电子邮件地址：
 Confirmation mail has been sent to your new email.: 确认邮件已经发送到您的新电子邮箱。
 Help: 帮助
@@ -259,7 +259,7 @@ Uploaded By: 上传者
 Upload Problem: 上传题目
 User: 用户
 Username: 用户名
-Using your Vijos universal account: 使用您的 AKIOI OJ 通用账户
+Using your AKIOI OJ universal account: 使用您的 AKIOI OJ 通用账户
 View Problem: 查看题目
 View or create discussion: 查看与发表讨论
 View or submit solution: 查看与发表题解

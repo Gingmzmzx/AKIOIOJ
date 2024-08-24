@@ -61,7 +61,7 @@ Blog: 部落格
 Boom!: 炸了！
 wiki_oj: AKIOI OJ 使用
 Browser: 瀏覽器
-? By signing up a Vijos universal account, you can submit code and join discussions in all online
+? By signing up a AKIOI OJ universal account, you can submit code and join discussions in all online
   judging services provided by us.
 : 註冊一個 AKIOI OJ 通用賬戶，您就可以在我們提供的所有線上評測服務上提交程式碼、參與討論。
 Cheater: 作弊者
@@ -120,10 +120,10 @@ Forgot password or username?: 忘記密碼或者使用者名？
 Gender: 性別
 Gender Visibility: 性別可見性
 Gravatar Email: 头像图片地址
-'Hello! You can click following link to sign up your Vijos account:': 您好！您可以點選以下連結來註冊您的 AKIOI OJ 賬戶：
-'Hello, {0}! You can click following link to reset the password of your Vijos account:': 您好，{0}！您可以點選以下連結來重置您
+'Hello! You can click following link to sign up your AKIOI OJ account:': 您好！您可以點選以下連結來註冊您的 AKIOI OJ 賬戶：
+'Hello, {0}! You can click following link to reset the password of your AKIOI OJ account:': 您好，{0}！您可以點選以下連結來重置您
   AKIOI OJ 賬戶的密碼：
-'Hello, {0}! You can click following link to active your new email of your Vijos account:': 您好，{0}！您可以點選以下連結來啟用您
+'Hello, {0}! You can click following link to active your new email of your AKIOI OJ account:': 您好，{0}！您可以點選以下連結來啟用您
   AKIOI OJ 賬戶的新電子郵件地址：
 Confirmation mail has been sent to your new email.: 確認郵件已經發送到您的新電子郵箱。
 Help: 幫助
@@ -245,7 +245,7 @@ Uploaded By: 上傳者
 Upload Problem: 上傳題目
 User: 使用者
 Username: 使用者名
-Using your Vijos universal account: 使用您的 AKIOI OJ 通用賬戶
+Using your AKIOI OJ universal account: 使用您的 AKIOI OJ 通用賬戶
 View Problem: 檢視題目
 View or create discussion: 檢視與發表討論
 View or submit solution: 檢視與發表題解
