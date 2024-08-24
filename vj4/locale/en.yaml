@@ -54,6 +54,8 @@ domain_main: Main
 domain_manage: Domain Manage
 domain_manage_dashboard: Dashboard
 domain_manage_discussion: Discussion Nodes
+domain_manage_suggest_problem: Recommended Problems
+domain_manage_swiper: Swiper Images
 domain_manage_edit: Edit Info
 domain_manage_join_applications: Join Applications
 domain_manage_role: Domain Role
@@ -69,6 +71,9 @@ perm_contest: Contests
 perm_training: Trainings
 perm_ranking: Ranking
 perm_user: User
+admin_dashboard: Admin Dashboard
+admin_user: User Management
+admin_privilege: Privilege Management
 discussion_edit: Discussion Edit
 wiki_help: Help
 no_translation_warn: <blockquote class="warn">This part of content is under translation.</blockquote>
