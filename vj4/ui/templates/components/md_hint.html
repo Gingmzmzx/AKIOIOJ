@@ -1,30 +1,25 @@
     <div class="section side">
       <div class="section__body typo">
         <h2>{{ _('About Markdown') }}</h2>
-        <dl>
-          <dt>{{ _('Inline codes') }}</dt>
-          <dd><pre>`std::cout()`</pre></dd>
-          <dt>{{ _('Code blocks') }}</dt>
-          <dd>
-<pre>```c++
-int main() {
-  return 0;
-}
+        <p>关于Markdown，我想我不需要再介绍过多了。<br>
+          我承认本OJ的Markdown转义很烂，这里有一些你可能需要的提示。</p>
+          <dl>
+            <dt>显示多行代码</dt>
+            <dd>
+<pre>Here is some text.
+
+```python
+print("Hello World!")
 ```</pre>
-          </dd>
-          <dt>{{ _('Inline formulas') }}</dt>
-          <dd><pre>$ E=mc^2 $</pre></dd>
-          <dt>{{ _('Formula blocks') }}</dt>
-          <dd><pre>$$ E=mc^2 $$</pre></dd>
-          <dt>{{ _('Links') }}</dt>
-          <dd><pre>[{{ _('Text') }}](http://...)</pre></dd>
-          <dt>{{ _('Images') }}</dt>
-          <dd><pre>![{{ _('Description') }}](http://...)</pre></dd>
-        </dl>
-        <h2>{{ _('Learn More') }}</h2>
-        <ul>
-          <li><a href="http://commonmark.org/help/" target="_blank"><span class="icon icon-link--external"></span> {{ _('CommonMark Syntax') }}</a></li>
-          <li><a href="http://www.onemathematicalcat.org/MathJaxDocumentation/TeXSyntax.htm" target="_blank"><span class="icon icon-link--external"></span> {{ _('LaTeX Expressions') }}</a></li>
-        </ul>
+              <p>是的，<b>多行代码块（```）与前后的段落之间都要至少有一个空行，否则将会无法正常显示！</b></p>
+            </dd>
+            <dt>粗体、斜体等特殊字体</dt>
+            <dd>
+              <pre>Thisisa**bold**text.</pre>
+              <p>这将不能正确显示，因为<b>特殊字体要与左右的字符之间至少有一个空格</b>。比如下面这样</p>
+              <pre>This is a **bold** text.</pre>
+            </dd>
+            <dt>未完待续</dt>
+          </dl>
       </div>
     </div>
