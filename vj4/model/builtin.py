@@ -7,9 +7,9 @@ from vj4 import constant
 from vj4.util import version
 
 # Blessings
-BLESSING = False # Modify and restart
-BLESSING_MESSAGE = "CSP-JSX 2024 RP++!!!"
-BLESSING_CONTENT = "# 祝大家CSP-JSX 2024 RP++!"
+BLESSING = True # Modify and restart
+BLESSING_MESSAGE = "CSP-JS 2024 RP++!!!"
+BLESSING_CONTENT = "# 祝大家CSP-JSX / NOIP 2024 RP++!"
 
 # Permissions.
 PERM_NONE = 0
@@ -196,7 +196,7 @@ Privilege = collections.namedtuple('Privilege',
                                     ['family', 'key', 'desc'])
 
 PRIVS = [
-    Privilege("priv_none", PRIV_NONE, "This user has no privileges (banned user)"),
+    Privilege("priv_none", PRIV_NONE, "Basic privileges"),
     Privilege("priv_set_priv", PRIV_SET_PRIV, "Modifying User Privileges"),
     Privilege("priv_set_perm", PRIV_SET_PERM, "Modifying User Permissions"),
     Privilege("priv_user_profile", PRIV_USER_PROFILE, "Use Profile"),

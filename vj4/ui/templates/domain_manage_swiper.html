@@ -38,8 +38,8 @@
       <table class="data-table">
         <colgroup>
           <col class="col--checkbox">
-          <col class="col--href">
           <col class="col--src">
+          <col class="col--href">
           <col class="col--action">
         </colgroup>
         <thead>
@@ -49,8 +49,8 @@
                 <input type="checkbox" name="select_all" data-checkbox-toggle="user">
               </label>
             </th>
-            <th class="col--href">{{ _('The URL to jump to when clicked') }}</th>
             <th class="col--src">{{ _('Image URL (Unique)') }}</th>
+            <th class="col--href">{{ _('The URL to jump to when clicked') }}</th>
             <th class="col--action">{{ _('Action') }}</th>
           </tr>
         </thead>
@@ -62,10 +62,10 @@
                   <input type="checkbox">
                 </label>
               </td>
-              <td class="col--href">
+              <td class="col--src">
                 {{ sdoc['src'] }}
               </td>
-              <td class="col--src">
+              <td class="col--href">
                 {{ sdoc['href'] }}
               </td>
               <td class="col--action">

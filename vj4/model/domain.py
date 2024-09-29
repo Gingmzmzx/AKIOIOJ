@@ -64,6 +64,8 @@ async def add_continue(domain_id: str, ensure_owner_uid: int=None):
 async def get(domain_id: str, fields=None):
   for domain in builtin.DOMAINS:
     if domain['_id'] == domain_id:
+      domain['roles'] = await system.get_roles()
+      domain['bulletin'] = await system.get_bulletin()
       return domain
   coll = db.coll('domain')
   ddoc = await coll.find_one(domain_id, fields)
@@ -137,6 +139,7 @@ async def get_swiper(domain_id: str):
 async def edit(domain_id: str, **kwargs):
   for domain in builtin.DOMAINS:
     if domain['_id'] == domain_id:
+      return await system.set_bulletin(kwargs.get("bulletin", ""))
       raise error.BuiltinDomainError(domain_id)
   coll = db.coll('domain')
   if 'owner_uid' in kwargs:
@@ -192,7 +195,8 @@ async def set_roles(domain_id: str, roles):
     update['roles.{0}'.format(role)] = roles[role]
   for domain in builtin.DOMAINS:
     if domain['_id'] == domain_id:
-      raise error.BuiltinDomainError(domain_id)
+      # raise error.BuiltinDomainError(domain_id)
+      return await system.set_roles(update)
   coll = db.coll('domain')
   return await coll.find_one_and_update(filter={'_id': domain_id},
                                         update={'$set': update},
@@ -212,7 +216,8 @@ async def delete_roles(domain_id: str, roles):
       raise error.ModifyBuiltinRoleError(domain_id, role)
   for domain in builtin.DOMAINS:
     if domain['_id'] == domain_id:
-      raise error.BuiltinDomainError(domain_id)
+      # raise error.BuiltinDomainError(domain_id)
+      return await system.delete_roles(roles)
   user_coll = db.coll('domain.user')
   await user_coll.update_many({'domain_id': domain_id, 'role': {'$in': list(roles)}},
                               {'$unset': {'role': ''}})

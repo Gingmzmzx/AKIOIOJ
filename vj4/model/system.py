@@ -6,6 +6,7 @@ from pymongo import ReturnDocument
 from vj4 import db
 from vj4 import error
 from vj4.util import argmethod
+from vj4.model import builtin
 
 
 EXPECTED_DB_VERSION = 1
@@ -39,6 +40,51 @@ async def get_swiper():
   coll = db.coll("system")
   doc = await coll.find_one({"_id":"swiper"})
   return doc['value']
+
+
+@argmethod.wrap
+async def set_bulletin(bulletin):
+  coll = db.coll("system")
+  doc = await coll.find_one_and_update(filter={'_id': 'bulletin'},
+                                       update={'$set': {'value': bulletin}})
+  return doc['value']
+
+
+@argmethod.wrap
+async def get_bulletin():
+  coll = db.coll("system")
+  doc = await coll.find_one({"_id":"bulletin"})
+  return doc['value']
+
+
+@argmethod.wrap
+async def set_role(role: str, perm: int):
+  return await set_roles({role: perm})
+
+
+@argmethod.wrap
+async def set_roles(roles):
+  coll = db.coll("system")
+  doc = await coll.find_one_and_update(filter={'_id': 'roles'},
+                                       update={'$set': roles})
+  return doc['roles']
+
+
+@argmethod.wrap
+async def delete_roles(roles):
+  coll = db.coll("system")
+  doc = await coll.find_one_and_update(filter={'_id': "roles"},
+                                        update={'$unset': dict(('roles.{0}'.format(role), '')
+                                                               for role in roles)},
+                                        return_document=ReturnDocument.AFTER)
+  return doc['roles']
+
+
+@argmethod.wrap
+async def get_roles():
+  coll = db.coll("system")
+  doc = await coll.find_one({"_id":"roles"})
+  return doc['roles']
 
 
 @argmethod.wrap
@@ -167,6 +213,14 @@ async def ensure_indexes():
                         update={'$setOnInsert': {'value': []}}, upsert=True)
   await coll.update_one(filter={'_id': 'swiper'},
                         update={'$setOnInsert': {'value': []}}, upsert=True)
+  await coll.update_one(filter={'_id': 'bulletin'},
+                        update={'$setOnInsert': {'value': builtin.BUILTIN_DOMAIN_BULLETIN}}, upsert=True)
+  await coll.update_one(filter={'_id': 'roles'},
+                        update={'$setOnInsert': {'roles': {
+                          "guest": builtin.BASIC_PERMISSIONS,
+                          "default": builtin.DEFAULT_PERMISSIONS,
+                          "admin": builtin.TCA_PERMISSIONS
+                        }}}, upsert=True)
 
 
 if __name__ == '__main__':

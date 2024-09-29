@@ -81,6 +81,8 @@ to resolve this.
 
 To enable IP geo-location translation, you need to follow the instruction on [MaxMind GeoLite2](http://dev.maxmind.com/geoip/geoip2/geolite2/) to obtain a GeoLite2 City Database, unzip it, and put it in the project root directory with the filename `GeoLite2-City.mmdb`.
 
+本仓库自带了一个GeoLite2-City.mmdb
+
 You may also want to install [libmaxminddb](https://github.com/maxmind/libmaxminddb/blob/master/README.md) for higher performance.
 
 ## Development
@@ -170,3 +172,9 @@ No commercial use, except get permission from us.
 * [Jinja2 Documentation](http://jinja.pocoo.org/docs/)
 * [Motor: Asynchronous Python driver for MongoDB](http://motor.readthedocs.org/en/stable/)
 * [Webpack Module Bundler](https://webpack.js.org/)
+
+## GeoLite2 License
+
+- Database and Contents Copyright (c) [MaxMind](https://www.maxmind.com/), Inc.
+- [GeoLite2 End User License Agreement](https://www.maxmind.com/en/geolite2/eula)
+- [Creative Commons Corporation Attribution-ShareAlike 4.0 International License (the "Creative Commons License")](https://creativecommons.org/licenses/by-sa/4.0/)

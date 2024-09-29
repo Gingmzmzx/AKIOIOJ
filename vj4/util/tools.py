@@ -21,7 +21,11 @@ async def ensure_all_indexes():
 
 def get_remote_ip(request):
   if options.ip_header:
-    return request.headers.get(options.ip_header)
+    addrinfo = request.headers.get(options.ip_header)
+    if not addrinfo: return addrinfo;
+    if ", " in addrinfo:
+      addrinfo = addrinfo.split(", ")[0] 
+    return addrinfo
   else:
     return request.transport.get_extra_info('peername')[0]
 
