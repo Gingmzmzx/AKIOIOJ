@@ -256,6 +256,7 @@ class Handler(web.View, HandlerBase):
     self.response.content_type = 'text/html'
     self.response.headers.add('Cache-Control', 'no-store, no-cache, must-revalidate')
     self.response.headers.add('Pragma', 'no-cache')
+    kwargs['domain_document'] = self.domain
     self.response.text = self.render_html(template_name, **kwargs)
 
   def json(self, obj):

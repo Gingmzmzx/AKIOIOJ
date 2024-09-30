@@ -58,6 +58,36 @@ async def get_bulletin():
 
 
 @argmethod.wrap
+async def set_footer(footer):
+  coll = db.coll("system")
+  doc = await coll.find_one_and_update(filter={'_id': 'footer'},
+                                       update={'$set': {'value': footer}})
+  return doc['value']
+
+
+@argmethod.wrap
+async def get_footer():
+  coll = db.coll("system")
+  doc = await coll.find_one({"_id":"footer"})
+  return doc['value']
+
+
+@argmethod.wrap
+async def set_additional_css(additional_css):
+  coll = db.coll("system")
+  doc = await coll.find_one_and_update(filter={'_id': 'additional_css'},
+                                       update={'$set': {'value': additional_css}})
+  return doc['value']
+
+
+@argmethod.wrap
+async def get_additional_css():
+  coll = db.coll("system")
+  doc = await coll.find_one({"_id":"additional_css"})
+  return doc['value']
+
+
+@argmethod.wrap
 async def set_role(role: str, perm: int):
   return await set_roles({role: perm})
 
@@ -215,6 +245,10 @@ async def ensure_indexes():
                         update={'$setOnInsert': {'value': []}}, upsert=True)
   await coll.update_one(filter={'_id': 'bulletin'},
                         update={'$setOnInsert': {'value': builtin.BUILTIN_DOMAIN_BULLETIN}}, upsert=True)
+  await coll.update_one(filter={'_id': 'footer'},
+                        update={'$setOnInsert': {'value': ""}}, upsert=True)
+  await coll.update_one(filter={'_id': 'additional_css'},
+                        update={'$setOnInsert': {'value': ""}}, upsert=True)
   await coll.update_one(filter={'_id': 'roles'},
                         update={'$setOnInsert': {'roles': {
                           "guest": builtin.BASIC_PERMISSIONS,

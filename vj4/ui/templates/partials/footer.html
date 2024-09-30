@@ -39,6 +39,11 @@
           <li class="footer__category__item"><a href="/about#contact">{{ _('Contact Us') }}</a></li>
         </ul></div>
       </div>
+      {% if domain_document['footer'] %}
+      <div class="medium-3 large-2 columns footer__category expandable">
+        {{ domain_document['footer']|markdown }}
+      </div>
+      {% endif %}
     </div>
   {% endif %}
     <div class="footer__extra-link clearfix">

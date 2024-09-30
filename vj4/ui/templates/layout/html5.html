@@ -31,6 +31,15 @@
     var UiContext = {{ handler.ui_context|json|safe }};
     var UserContext = {{ handler.user_context|json|safe }};
   </script>
+  <script type="text/javascript"
+    src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.0/es5/tex-mml-chtml.js">
+  </script>
+
+  {% if domain_document %}
+  <style>
+    {{ domain_document['additional_css']|default('/* No additional CSS */') }}
+  </style>
+  {% endif %}
 </head>
 <body>
   {% block body %}{% endblock %}

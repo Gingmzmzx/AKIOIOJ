@@ -7,3 +7,7 @@
   {{ form.form_text(label='Name', name='name', value=ddoc['name']|default(''), autofocus=(page_name == 'domain_manage_edit'), required=true) }}
   {{ form.form_text(label='Gravatar Email', help_text='Will be used as the domain icon.', name='gravatar', value=ddoc['gravatar']|default('')) }}
   {{ form.form_textarea(columns=12, label='Bulletin', name='bulletin', value=ddoc['bulletin']|default(''),  markdown=true, required=false) }}
+{% if page_name == 'domain_manage_edit' %}
+  {{ form.form_textarea(columns=8, label='Footer Content (Markdown)', name='footer', value=ddoc['footer']|default(''),  markdown=true, required=false) }}
+  {{ form.form_textarea(columns=8, label='Additional CSS', name='additional_css', value=ddoc['additional_css']|default(''),  markdown=false, required=false) }}
+{% endif %}

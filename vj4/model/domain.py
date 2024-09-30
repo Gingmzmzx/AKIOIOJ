@@ -66,6 +66,8 @@ async def get(domain_id: str, fields=None):
     if domain['_id'] == domain_id:
       domain['roles'] = await system.get_roles()
       domain['bulletin'] = await system.get_bulletin()
+      domain['footer'] = await system.get_footer()
+      domain['additional_css'] = await system.get_additional_css()
       return domain
   coll = db.coll('domain')
   ddoc = await coll.find_one(domain_id, fields)
@@ -139,7 +141,10 @@ async def get_swiper(domain_id: str):
 async def edit(domain_id: str, **kwargs):
   for domain in builtin.DOMAINS:
     if domain['_id'] == domain_id:
-      return await system.set_bulletin(kwargs.get("bulletin", ""))
+      await system.set_bulletin(kwargs.get("bulletin", ""))
+      await system.set_footer(kwargs.get("footer", ""))
+      await system.set_additional_css(kwargs.get("additional_css", ""))
+      return
       raise error.BuiltinDomainError(domain_id)
   coll = db.coll('domain')
   if 'owner_uid' in kwargs:

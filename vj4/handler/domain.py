@@ -151,8 +151,8 @@ class DomainEditHandler(base.Handler):
   @base.post_argument
   @base.require_csrf_token
   @base.sanitize
-  async def post(self, *, name: str, gravatar: str, bulletin: str):
-    await domain.edit(self.domain_id, name=name, gravatar=gravatar, bulletin=bulletin)
+  async def post(self, *, name: str, gravatar: str, bulletin: str, footer: str, additional_css: str):
+    await domain.edit(self.domain_id, name=name, gravatar=gravatar, bulletin=bulletin, footer=footer, additional_css=additional_css)
     self.json_or_redirect(self.url)
 
 

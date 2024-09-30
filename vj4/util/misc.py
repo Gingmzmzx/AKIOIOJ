@@ -1,7 +1,15 @@
 import base64
 import hashlib
 import hoedown
-# import markdown as mdparser
+# 懒得构建镜像了，就像这样凑活着用吧
+try:
+#   import markdown as mdparser
+  import bleach
+except ImportError:
+  import pip
+  pip.main("install bleach".split())
+#   import markdown as mdparser
+  import bleach
 import jinja2
 import markupsafe
 import re
@@ -17,10 +25,30 @@ MARKDOWN_EXTENSIONS = (hoedown.EXT_TABLES |  # Parse PHP-Markdown style tables.
                        hoedown.EXT_MATH |  # Parse TeX $$math$$ syntax, Kramdown style.
                        hoedown.EXT_SPACE_HEADERS |  # Require a space after '#' in headers.
                        hoedown.EXT_MATH_EXPLICIT |  # Instead of guessing by context, parse $inline math$ and $$always block math$$ (requires EXT_MATH).
-                       hoedown.EXT_DISABLE_INDENTED_CODE)  # Don't parse indented code blocks.
-MARKDOWN_RENDER_FLAGS = (hoedown.HTML_ESCAPE |  # Escape all HTML.
+                       hoedown.EXT_DISABLE_INDENTED_CODE |  # Don't parse indented code blocks.
+                       hoedown.EXT_FOOTNOTES | hoedown.EXT_STRIKETHROUGH | hoedown.EXT_UNDERLINE | hoedown.EXT_HIGHLIGHT | hoedown.EXT_QUOTE | hoedown.EXT_SUPERSCRIPT )
+MARKDOWN_RENDER_FLAGS = ( # hoedown.HTML_ESCAPE |  # Escape all HTML.
                          hoedown.HTML_HARD_WRAP)  # Render each linebreak as <br>.
 
+ALLOWED_TAGS = bleach.sanitizer.ALLOWED_TAGS + [
+    'table', 'tbody', 'thead', 'tr', 'th', 'td',
+    'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+    'blockquote', 'p', 'b', 'i', 'u', 'strong', 'em', 'sup', 'a', 'img', 'del', 'mark', 'br', 'hr',
+    'div', 'span', 'iframe',
+    'pre', 'code']
+ALLOWED_ATTRIBUTES = {
+    'a': ['href', 'title', 'style'],
+    'img': ['src', 'alt', 'style'],
+    'div': ['class', 'style'],
+    'span': ['class', 'style'],
+    'th': ['class', 'style'],
+    'td': ['class', 'style'],
+    'tr': ['class', 'style'],
+    'table': ['class', 'style'],
+    'thead': ['class', 'style'],
+    'tbody': ['class', 'style'],
+    'iframe': ['src', 'style', 'width', 'height', 'frameborder', 'allow', 'allowfullscreen'],
+}
 
 FS_RE = re.compile(r'\(vijos\:\/\/fs\/([0-9a-f]{40,})\)')
 
@@ -44,7 +72,7 @@ def markdown(text):
   #       'markdown.extensions.admonition',
   #       'markdown.extensions.codehilite',
   #       'markdown.extensions.meta',
-  #       # 'markdown_katex',
+  #       'markdown_katex',
   #   ],
   #   extension_configs={
   #       'markdown_katex': {
@@ -54,8 +82,13 @@ def markdown(text):
   #   }
   # )
   # return markupsafe.Markup(md_ctx)
-  return markupsafe.Markup(hoedown.html(
-      text, extensions=MARKDOWN_EXTENSIONS, render_flags=MARKDOWN_RENDER_FLAGS))
+
+  md_ctx = hoedown.html(
+      text, extensions=MARKDOWN_EXTENSIONS, render_flags=MARKDOWN_RENDER_FLAGS)
+  clean_html = bleach.clean(md_ctx, tags=ALLOWED_TAGS, attributes=ALLOWED_ATTRIBUTES)
+  clean_html = clean_html.replace("<iframe ", "<iframe sandbox='allow-scripts' ")
+  # clean_html = md_ctx
+  return markupsafe.Markup(clean_html)
 
 
 def gravatar_url(gravatar, size=200):
