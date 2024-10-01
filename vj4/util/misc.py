@@ -2,7 +2,12 @@ import base64
 import hashlib
 import hoedown
 #   import markdown as mdparser
-import bleach
+try:  # 懒得重构镜像了，凑活着用吧（
+  import bleach
+except ImportError:
+  import pip
+  pip.main("install bleach".split())
+  import bleach
 import jinja2
 import markupsafe
 import re
