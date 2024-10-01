@@ -25,7 +25,7 @@ Vagrantfile
 *.mmdb
 
 # Generated fonts
-vj4/ui/misc/.iconfont
+# vj4/ui/misc/.iconfont
 
 # Generated constants
 vj4/constant
