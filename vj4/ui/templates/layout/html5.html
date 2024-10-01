@@ -31,7 +31,29 @@
     var UiContext = {{ handler.ui_context|json|safe }};
     var UserContext = {{ handler.user_context|json|safe }};
   </script>
-  <script type="text/javascript"
+
+  <!-- MathJax2 -->
+  <!-- <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']]
+      }
+    });
+    </script>
+  <script src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script> -->
+
+  <!-- MathJax3 -->
+  <!-- <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      },
+      svg: {
+        fontCache: 'global'
+      }
+    };
+  </script> -->
+  <script type="text/javascript" async 
     src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.0/es5/tex-mml-chtml.js">
   </script>
 

@@ -61,8 +61,41 @@ def fs_replace(m):
   return '(' + options.cdn_prefix.rstrip('/') + '/fs/' + m.group(1) + ')'
 
 
+def render_markdown(text):
+  # text = text.replace("&amp;", "&")
+
+  # 提取数学公式
+  math_inline = re.findall(r'\$(.*?)\$', text)
+  math_block = re.findall(r'\$\$(.*?)\$\$', text)
+
+  # 替换数学公式为占位符
+  for i, math in enumerate(math_inline):
+      text = text.replace(f"${math}$", f"@@MATH_IN_{i}@@")
+  for i, math in enumerate(math_block):
+      text = text.replace(f"$${math}$$", f"@@MATH_BLOCK_{i}@@")
+
+  # 渲染 Markdown
+  md_ctx = hoedown.html(text, extensions=MARKDOWN_EXTENSIONS, render_flags=MARKDOWN_RENDER_FLAGS)
+
+  # 清理 HTML
+  clean_html = bleach.clean(md_ctx, tags=ALLOWED_TAGS, attributes=ALLOWED_ATTRIBUTES)
+
+  # 恢复数学公式
+  for i, math in enumerate(math_inline):
+      clean_html = clean_html.replace(f"@@MATH_IN_{i}@@", f"${math}$")
+  for i, math in enumerate(math_block):
+      clean_html = clean_html.replace(f"@@MATH_BLOCK_{i}@@", f"$${math}$$")
+
+  # 为 <iframe> 标签添加 sandbox 属性
+  clean_html = clean_html.replace("<iframe ", "<iframe sandbox='allow-scripts' ")
+
+  return markupsafe.Markup(clean_html)
+
+
 def markdown(text):
   text = FS_RE.sub(fs_replace, text)
+
+  # Markdown库进行渲染
   # md_ctx = mdparser.markdown(text,
   #   extensions=[
   #       'markdown.extensions.toc',
@@ -81,12 +114,15 @@ def markdown(text):
   # )
   # return markupsafe.Markup(md_ctx)
 
+  # hoedown库进行渲染
   md_ctx = hoedown.html(
       text, extensions=MARKDOWN_EXTENSIONS, render_flags=MARKDOWN_RENDER_FLAGS)
   clean_html = bleach.clean(md_ctx, tags=ALLOWED_TAGS, attributes=ALLOWED_ATTRIBUTES)
   clean_html = clean_html.replace("<iframe ", "<iframe sandbox='allow-scripts' ")
-  # clean_html = md_ctx
   return markupsafe.Markup(clean_html)
+
+  # 剥离数学公式进行渲染
+  # return markupsafe.Markup(render_markdown(text))
 
 
 def gravatar_url(gravatar, size=200):
