@@ -44,8 +44,13 @@
                 <a class="profile-header__contact-item" href="{{ reverse_url('home_messages') }}?target_uid={{ udoc['_id'] }}" target="_blank" data-tooltip="{{ _('Send Message') }}">
                   <span class="icon icon-comment--multiple"></span>
                 </a>
-              {% if set_cheat_perm %}
+              {% if handler.has_priv(vj4.model.builtin.PRIV_USER_SET_CHEAT) %}
                 <a class="profile-header__contact-item" href="{{ reverse_url('user_set_cheat', uid=udoc['_id']) }}" data-tooltip="{{ _('Set user as Cheater') }}">
+                  <span class="icon icon-block"></span>
+                </a>
+              {% endif %}
+              {% if handler.has_priv(vj4.model.builtin.PRIV_USER_SET_MEMORIAL_ACCOUNT) %}
+                <a class="profile-header__contact-item" href="{{ reverse_url('user_set_memorial_account', uid=udoc['_id']) }}" data-tooltip="{{ _('Set user as a memorial account') }}">
                   <span class="icon icon-block"></span>
                 </a>
               {% endif %}

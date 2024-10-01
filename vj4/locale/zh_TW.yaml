@@ -40,6 +40,7 @@ File space unlimited: 无限制的文件空间
 Delete File: 删除文件
 Delete yourself file: 删除自己文件
 Cheater Manager: 作弊管理者
+Memorial Account Manager: 纪念账号管理者
 Use Admin Dashboard: 使用管理员面板
 API: API
 About: 關於
@@ -607,6 +608,7 @@ Claim homework: 認領功課
 Edit any homework: 修改任意功課
 Edit own homework: 修改自己的功課
 Set user as Cheater: 设置用户为作弊者
+Set user as a memorial account: 将该账号设为纪念账号
 Can be Extended For: 可延期
 Open Since: 開始時間
 Hard Deadline: 最終截止時間

@@ -155,6 +155,16 @@ async def set_cheat(uid: int, status: bool):
 
 
 @argmethod.wrap
+async def set_commemorate(uid: int, status: bool):
+  """Set or remove the user as a memorial account"""
+  coll = db.coll('user')
+  doc = await coll.find_one_and_update(filter={'_id': uid},
+                                       update={'$set': {"commemorate": status}},
+                                       return_document=ReturnDocument.AFTER)
+  return doc
+
+
+@argmethod.wrap
 async def set_tags(uid: int, tags: list):
   """Set the user's tags"""
   coll = db.coll('user')

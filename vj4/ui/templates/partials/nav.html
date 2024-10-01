@@ -34,7 +34,7 @@
     {% if handler.has_perm(vj4.model.builtin.PERM_EDIT_DESCRIPTION) or handler.has_perm(vj4.model.builtin.PERM_EDIT_PERM) %}
       {{ nav_item('domain_manage', 'domain_manage') }}
     {% endif %}
-    {% if handler.has_perm(vj4.model.builtin.PRIV_ADMIN) %}
+    {% if handler.has_priv(vj4.model.builtin.PRIV_ADMIN) %}
       {{ nav_item('admin_dashboard', 'admin_dashboard') }}
     {% endif %}
     </ol>

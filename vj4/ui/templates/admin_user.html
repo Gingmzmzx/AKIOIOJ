@@ -62,7 +62,7 @@
               {{ user.render_inline(udoc) }}
             </td>
             <td class="col--role">
-              <a name="set_badge">{{ _("Edit Tags") }}</a>  <a href="{{ reverse_url('admin_privilege', uid=udoc['_id']) }}">{{ _("Edit Privilege") }}</a>
+              <a name="set_badge">{{ _("Edit Tags") }}</a> · <a href="{{ reverse_url('admin_privilege', uid=udoc['_id']) }}">{{ _("Edit Privilege") }}</a>
             </td>
         </tr>
         {% endfor %}

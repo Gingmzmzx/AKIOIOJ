@@ -219,14 +219,11 @@ class UserDetailHandler(base.Handler, UserSettingsMixin):
       vndict = {}
       dcount = 0
     
-    set_cheat_perm = self.has_priv(builtin.PRIV_USER_SET_CHEAT)
-
     self.render('user_detail.html', is_self_profile=is_self_profile,
                 udoc=udoc, dudoc=dudoc, sdoc=sdoc,
                 rdocs=rdocs, pdict=pdict, pdocs=pdocs, pcount=pcount,
                 psdocs=psdocs, pscount=pscount, psdocs_hot=psdocs_hot,
-                ddocs=ddocs, dcount=dcount, vndict=vndict,
-                set_cheat_perm=set_cheat_perm)
+                ddocs=ddocs, dcount=dcount, vndict=vndict)
 
 
 @app.route('/user/{uid:-?\d+}/set_cheat', 'user_set_cheat')
@@ -240,6 +237,21 @@ class UserCheatHandler(base.Handler, UserSettingsMixin):
       raise error.UserNotFoundError(uid)
     status = not udoc.get("cheater", False)
     await user.set_cheat(uid, status)
+
+    self.json_or_redirect(self.reverse_url('user_detail', uid=uid))
+
+
+@app.route('/user/{uid:-?\d+}/set_memorial_account', 'user_set_memorial_account')
+class UserMemorialAccountHandler(base.Handler, UserSettingsMixin):
+  @base.route_argument
+  @base.sanitize
+  @base.require_priv(builtin.PRIV_USER_SET_MEMORIAL_ACCOUNT)
+  async def get(self, *, uid: int):
+    udoc = await user.get_by_uid(uid)
+    if not udoc:
+      raise error.UserNotFoundError(uid)
+    status = not udoc.get("commemorate", False)
+    await user.set_commemorate(uid, status)
 
     self.json_or_redirect(self.reverse_url('user_detail', uid=uid))
 

@@ -189,6 +189,7 @@ PRIV_UNLIMITED_QUOTA = 1 << 17
 PRIV_DELETE_FILE = 1 << 18
 PRIV_DELETE_FILE_SELF = 1 << 19
 PRIV_USER_SET_CHEAT = 1 << 20
+PRIV_USER_SET_MEMORIAL_ACCOUNT = 1 << 22
 PRIV_ADMIN = 1 << 21
 PRIV_ALL = -1
 
@@ -218,6 +219,7 @@ PRIVS = [
     Privilege("priv_delete_file", PRIV_DELETE_FILE, "Delete File"),
     Privilege("priv_delete_file_self", PRIV_DELETE_FILE_SELF, "Delete yourself file"),
     Privilege("priv_user_set_cheat", PRIV_USER_SET_CHEAT, "Cheater Manager"),
+    Privilege("priv_user_set_memorial_account", PRIV_USER_SET_MEMORIAL_ACCOUNT, "Memorial Account Manager"),
     Privilege("priv_admin", PRIV_ADMIN, "Use Admin Dashboard"),
 ]
 
