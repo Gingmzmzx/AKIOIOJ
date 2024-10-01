@@ -51,7 +51,7 @@
               {% endif %}
               {% if handler.has_priv(vj4.model.builtin.PRIV_USER_SET_MEMORIAL_ACCOUNT) %}
                 <a class="profile-header__contact-item" href="{{ reverse_url('user_set_memorial_account', uid=udoc['_id']) }}" data-tooltip="{{ _('Set user as a memorial account') }}">
-                  <span class="icon icon-block"></span>
+                  <span class="icon icon-schedule"></span>
                 </a>
               {% endif %}
               {% if handler.can_view(udoc, 'mail') and udoc['mail'] %}
