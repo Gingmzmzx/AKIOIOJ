@@ -9,7 +9,11 @@
 </p>
 
 <p align="center">
-  由<a href="https://vijos.org" target="_blank">Vijos</a>强力驱动的新一代Online Judge服务
+  由<a href="https://oj.xzynb.top" target="_blank">AKIOIOJ</a>强力驱动的新一代Online Judge服务
+</p>
+
+<p align="center">
+  本项目由 <a href="https://github.com/vijos/vj4">Vijos 4</a> 二次开发而来。
 </p>
 
 ***
@@ -26,20 +30,29 @@
 - Real-time Status Updates
 - Online Judge as a Service (a.k.a. Domain): create your own OJ website without dev-ops!
 - Management UI
-- Sandboxed & Distributed Judging: see [jd4](https://github.com/vijos/jd4), [winjudge](https://github.com/iceb0y/winjudge) and [windows-container](https://github.com/iceb0y/windows-container)
+- Sandboxed & Distributed Judging: see [jd4](https://github.com/Gingmzmzx/jd4), [winjudge](https://github.com/iceb0y/winjudge) and [windows-container](https://github.com/iceb0y/windows-container)
 - Secure (we are also CTF players)
 - Modern Architecture & User Interface
 
+相比于vj4新增的功能：（部分）
+- 用户TAG
+- 作弊者棕名
+- 纪念账户
+- 全站后台
+- 用户管理
+- 域轮播图
+- 域推荐题目
+- 域自定义CSS/页脚
+- 更加强大的Markdown以及数学公式渲染
+- 每日人品以及祝福
+- 更多特性请亲自体验
+
+
 ## 使用
 
-### Docker
+### Docker部署
 
-AKIOIOJ并无预构建的Docker镜像，不过您可以使用`vijos/vj4`，参见[vijos/vj4-docker](https://github.com/vijos/vj4-docker)。  
-- 下载vj4-docker中的`docker-compose.yml`文件，将其放置于工作目录下；
-- 然后创建`data/app/`目录，并将本仓库克隆。
-- 修改`docker-compose.yml`中的`services.web.volumes`，添加一行`- "./data/app:/app"`  
-  **注意！您可能也需要将`services.mongodb.image`改为`mongo:4.4.0`，使用`mongo:latest`会出现错误！**
-- 执行`docker-compose up -d`启动
+参考[Gingmzmzx/akioioj-docker](https://github.com/Gingmzmzx/akioioj-docker)
 
 #### 刷新RP和排名
 您可以在系统crontab中定时执行如下指令
@@ -152,7 +165,7 @@ pm vj4.model.user add -2 judge 123456 judge@example.org
 pm vj4.model.user set_judge -2
 ```
 
-* See https://github.com/vijos/jd4 for more details about the judge daemon.
+* See https://github.com/Gingmzmzx/jd4 for more details about the judge daemon.
 
 ## Notes
 

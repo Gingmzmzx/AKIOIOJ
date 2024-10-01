@@ -1,15 +1,8 @@
 import base64
 import hashlib
 import hoedown
-# 懒得构建镜像了，就像这样凑活着用吧
-try:
 #   import markdown as mdparser
-  import bleach
-except ImportError:
-  import pip
-  pip.main("install bleach".split())
-#   import markdown as mdparser
-  import bleach
+import bleach
 import jinja2
 import markupsafe
 import re

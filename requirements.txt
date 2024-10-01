@@ -14,5 +14,4 @@ PyYAML
 git+https://github.com/iceboy233/aiomongo
 yarl
 aiohttp-sentry
-Markdown
-markdown-katex
+bleach==4.1.0
