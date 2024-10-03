@@ -3,6 +3,7 @@ import collections
 import datetime
 import functools
 import random
+from bson import objectid
 
 from vj4 import app
 from vj4 import constant
@@ -12,11 +13,13 @@ from vj4.model import builtin
 from vj4.model import document
 from vj4.model import domain
 from vj4.model import user
+from vj4.model import system
 from vj4.model.adaptor import discussion
 from vj4.model.adaptor import contest
 from vj4.model.adaptor import training
 from vj4.handler import base
 from vj4.handler import training as training_handler
+from vj4.handler import discussion as discussion_handler
 from vj4.util import validator
 from vj4.util import misc
 from vj4.util import options
@@ -29,12 +32,13 @@ class TestHeaderHandler(base.Handler):
     self.render('bsod.html', args=self.request.headers)
 
 @app.route('/', 'domain_main')
-class DomainMainHandler(contest.ContestStatusMixin, base.Handler):
+class DomainMainHandler(contest.ContestStatusMixin, base.OperationHandler):
   CONTESTS_ON_MAIN = 5
   HOMEWORK_ON_MAIN = 5
   TRAININGS_ON_MAIN = 5
-  DISCUSSIONS_ON_MAIN = 20
+  DISCUSSIONS_ON_MAIN = 12
   USERS_PER_PAGE = 10
+  REPLIES_PER_PAGE = 30
 
   async def prepare_contest(self):
     if self.has_perm(builtin.PERM_VIEW_CONTEST):
@@ -75,9 +79,9 @@ class DomainMainHandler(contest.ContestStatusMixin, base.Handler):
       tsdict = {}
     return tdocs, tsdict
 
-  async def prepare_discussion(self):
+  async def prepare_discussion(self, benbenid=None):
     if self.has_perm(builtin.PERM_VIEW_DISCUSSION):
-      ddocs = await discussion.get_multi(self.domain_id) \
+      ddocs = await discussion.get_multi(self.domain_id, doc_id={"$ne":objectid.ObjectId(benbenid)}) \
                               .limit(self.DISCUSSIONS_ON_MAIN) \
                               .to_list()
       vndict = await discussion.get_dict_vnodes(self.domain_id, map(discussion.node_id, ddocs))
@@ -86,11 +90,17 @@ class DomainMainHandler(contest.ContestStatusMixin, base.Handler):
       vndict = {}
     return ddocs, vndict
 
-  async def get(self):
+  async def get(self, page: int=1):
+    benbenid = None
+    for dom in builtin.DOMAINS:
+      if dom['_id'] == self.domain_id:
+        benbenid = await system.get_benbenid()
+        break
+
     (tdocs, tsdict), (htdocs, htsdict),\
     (trdocs, trsdict), (ddocs, vndict) = await asyncio.gather(
         self.prepare_contest(), self.prepare_homework(),
-        self.prepare_training(), self.prepare_discussion())
+        self.prepare_training(), self.prepare_discussion(benbenid))
     
     dudocs, _, _ = await pagination.paginate(
         domain.get_multi_user(domain_id=self.domain_id, rp={'$gt': 0.0}).sort([('rank', 1)]),
@@ -105,6 +115,7 @@ class DomainMainHandler(contest.ContestStatusMixin, base.Handler):
     spdocs = await domain.get_suggest_problem(self.domain_id)
     sdocs = await domain.get_swiper(self.domain_id)
     
+    # 处理运势
     if self.has_priv(builtin.PRIV_USER_PROFILE):
       rnd = random.Random()
       rnd.seed(int(datetime.date.today().strftime("%y%m%d")) + int(self.user["_id"]))
@@ -114,17 +125,105 @@ class DomainMainHandler(contest.ContestStatusMixin, base.Handler):
       lucknum = "未登录"
       wdudoc = {}
 
+    drdocs, udictd, pcount, drcount = None, None, None, None
+    if benbenid:
+      did = benbenid
+      ddoc = await discussion.get(self.domain_id, did)
+      vnode, (drdocs, pcount, drcount) = await asyncio.gather(
+          discussion.get_vnode(self.domain_id, discussion.node_id(ddoc)),
+          pagination.paginate(discussion.get_multi_reply(self.domain_id, ddoc['doc_id']),
+                              page, self.REPLIES_PER_PAGE))
+      if not vnode:
+        vnode = builtin.VNODE_MISSING
+      elif vnode['doc_type'] == document.TYPE_PROBLEM and vnode.get('hidden', False):
+        self.check_perm(builtin.PERM_VIEW_PROBLEM_HIDDEN)
+      # TODO(twd2): do more visibility check eg. contest
+      uids = {ddoc['owner_uid']}
+      uids.update(drdoc['owner_uid'] for drdoc in drdocs)
+      for drdoc in drdocs:
+        if 'reply' in drdoc:
+          uids.update(drrdoc['owner_uid'] for drrdoc in drdoc['reply'])
+      if 'owner_uid' in vnode:
+        uids.add(vnode['owner_uid'])
+      udictd = await user.get_dict(uids)
+
     self.render('domain_main.html', discussion_nodes=await discussion.get_nodes(self.domain_id),
                 tdocs=tdocs, tsdict=tsdict,
                 htdocs=htdocs, htsdict=htsdict,
                 trdocs=trdocs, trsdict=trsdict,
                 training=training_handler.TrainingMixin(),
-                ddocs=ddocs, vndict=vndict,
+                ddocs=ddocs, vndict=vndict, discussions_per_page=self.DISCUSSIONS_ON_MAIN,
                 udict=udict, dudict=dudict, datetime_stamp=self.datetime_stamp,
                 blessing=builtin.BLESSING, blessing_content=builtin.BLESSING_CONTENT,
                 lucknum=lucknum, wdudoc=wdudoc, dudocs=dudocs, udoc=self.user, users_per_page=self.USERS_PER_PAGE,
                 rudict=rudict, rdudict=rdudict,
-                spdocs=spdocs, sdocs=sdocs)
+                spdocs=spdocs, sdocs=sdocs,
+                benbenid=benbenid, drdocs=drdocs, udictd=udictd, pcount=pcount, drcount=drcount)
+  
+  @base.require_priv(builtin.PRIV_USER_PROFILE)
+  @base.require_perm(builtin.PERM_REPLY_DISCUSSION)
+  @base.require_csrf_token
+  @base.sanitize
+  @base.limit_rate('add_discussion', 3600, 30)
+  async def post_reply(self, *, content: str):
+    did = await system.get_benbenid()
+    discussionMixin = discussion_handler.DiscussionMixin(self.domain_id, self.remote_ip, self.user, self.own, self.check_perm)
+    await discussionMixin.post_reply(did, content)
+    self.json_or_redirect(self.url)
+
+  @base.require_priv(builtin.PRIV_USER_PROFILE)
+  @base.require_perm(builtin.PERM_REPLY_DISCUSSION)
+  @base.require_csrf_token
+  @base.sanitize
+  @base.limit_rate('add_discussion', 3600, 30)
+  async def post_tail_reply(self, *,
+                            drid: document.convert_doc_id,
+                            content: str):
+    did = await system.get_benbenid()
+    discussionMixin = discussion_handler.DiscussionMixin(self.domain_id, self.remote_ip, self.user, self.own, self.check_perm)
+    await discussionMixin.post_tail_reply(did, drid, content)
+    self.json_or_redirect(self.url)
+
+  @base.require_priv(builtin.PRIV_USER_PROFILE)
+  @base.require_csrf_token
+  @base.sanitize
+  async def post_edit_reply(self, *,
+                            drid: document.convert_doc_id, content: str):
+    did = await system.get_benbenid()
+    discussionMixin = discussion_handler.DiscussionMixin(self.domain_id, self.remote_ip, self.user, self.own, self.check_perm)
+    await discussionMixin.post_edit_reply(did, drid, content)
+    self.json_or_redirect(self.url)
+
+  @base.require_priv(builtin.PRIV_USER_PROFILE)
+  @base.require_csrf_token
+  @base.sanitize
+  async def post_delete_reply(self, *, 
+                              drid: document.convert_doc_id):
+    did = await system.get_benbenid()
+    discussionMixin = discussion_handler.DiscussionMixin(self.domain_id, self.remote_ip, self.user, self.own, self.check_perm)
+    await discussionMixin.post_delete_reply(did, drid)
+    self.json_or_redirect(self.url)
+
+  @base.require_priv(builtin.PRIV_USER_PROFILE)
+  @base.require_csrf_token
+  @base.sanitize
+  async def post_edit_tail_reply(self, *,
+                                 drid: document.convert_doc_id, drrid: document.convert_doc_id,
+                                 content: str):
+    did = await system.get_benbenid()
+    discussionMixin = discussion_handler.DiscussionMixin(self.domain_id, self.remote_ip, self.user, self.own, self.check_perm)
+    await discussionMixin.post_edit_tail_reply(did, drid, drrid, content)
+    self.json_or_redirect(self.url)
+
+  @base.require_priv(builtin.PRIV_USER_PROFILE)
+  @base.require_csrf_token
+  @base.sanitize
+  async def post_delete_tail_reply(self, *,
+                                   drid: document.convert_doc_id, drrid: objectid.ObjectId):
+    did = await system.get_benbenid()
+    discussionMixin = discussion_handler.DiscussionMixin(self.domain_id, self.remote_ip, self.user, self.own, self.check_perm)
+    await discussionMixin.post_delete_tail_reply(did, drid, drrid)
+    self.json_or_redirect(self.url)
 
 
 @app.route('/domain', 'domain_manage')

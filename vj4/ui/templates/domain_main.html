@@ -220,9 +220,44 @@
   {% else %}
     <div class="section page--discussion_main">
       <div class="section__header">
-        <h1 class="section__title">{{ _('Discussion') }}</h1>
+        <h1 class="section__title">
+          {{ _('Discussion') }}
+          <small>{{ _('Only show the first {} items').format(discussions_per_page) }}</small>
+        </h1>
       </div>
       {% include "partials/discussion_list.html" %}
+    </div>
+  {% endif %}
+  {% if benbenid %}{% import "components/comments.html" as comments with context %}
+    <div class="section">
+      <div class="section__header">
+        <h1 class="section__title">{{ _('犇犇') }}</h1>
+      </div>
+      <div class="section__body">
+        {{ comments.render(
+          view = 'discussion',
+          docs = drdocs,
+          udict = udictd,
+          comment_ref = 'drid',
+          reply_ref = 'drrid',
+          comment_post_perm = vj4.model.builtin.PERM_REPLY_DISCUSSION,
+          comment_edit_perm = vj4.model.builtin.PERM_NONE if handler.own(ddoc, vj4.model.builtin.PERM_EDIT_DISCUSSION_REPLY_SELF_DISCUSSION) else vj4.model.builtin.PERM_EDIT_DISCUSSION_REPLY,
+          comment_edit_self_perm = vj4.model.builtin.PERM_EDIT_DISCUSSION_REPLY_SELF,
+          comment_delete_perm = vj4.model.builtin.PERM_NONE if handler.own(ddoc, vj4.model.builtin.PERM_DELETE_DISCUSSION_REPLY_SELF_DISCUSSION) else vj4.model.builtin.PERM_DELETE_DISCUSSION_REPLY,
+          comment_delete_self_perm = vj4.model.builtin.PERM_DELETE_DISCUSSION_REPLY_SELF,
+          reply_post_perm = vj4.model.builtin.PERM_REPLY_DISCUSSION,
+          reply_edit_perm = vj4.model.builtin.PERM_NONE if handler.own(ddoc, vj4.model.builtin.PERM_EDIT_DISCUSSION_REPLY_SELF_DISCUSSION) else vj4.model.builtin.PERM_EDIT_DISCUSSION_REPLY,
+          reply_edit_self_perm = vj4.model.builtin.PERM_EDIT_DISCUSSION_REPLY_SELF,
+          reply_delete_perm = vj4.model.builtin.PERM_NONE if handler.own(ddoc, vj4.model.builtin.PERM_DELETE_DISCUSSION_REPLY_SELF_DISCUSSION) else vj4.model.builtin.PERM_DELETE_DISCUSSION_REPLY,
+          reply_delete_self_perm = vj4.model.builtin.PERM_DELETE_DISCUSSION_REPLY_SELF
+        ) }}
+      {% if drcount == 0 %}
+        {{ nothing.render('No comments so far...') }}
+      {% endif %}
+      {% if pcount > 1 %}
+        <div style="text-align:center;"><a href="{{ reverse_url('discussion_detail', did=benbenid) }}" target="_blank">查看更多犇犇</a></div>
+      {% endif %}
+      </div>
     </div>
   {% endif %}
   </div>

@@ -73,6 +73,21 @@ async def get_footer():
 
 
 @argmethod.wrap
+async def set_benbenid(benbenid):
+  coll = db.coll("system")
+  doc = await coll.find_one_and_update(filter={'_id': 'benbenid'},
+                                       update={'$set': {'value': benbenid}})
+  return doc['value']
+
+
+@argmethod.wrap
+async def get_benbenid():
+  coll = db.coll("system")
+  doc = await coll.find_one({"_id":"benbenid"})
+  return doc['value']
+
+
+@argmethod.wrap
 async def set_additional_css(additional_css):
   coll = db.coll("system")
   doc = await coll.find_one_and_update(filter={'_id': 'additional_css'},
@@ -241,6 +256,8 @@ async def ensure_indexes():
                         upsert=True)
   await coll.update_one(filter={'_id': 'suggest_problem'},
                         update={'$setOnInsert': {'value': []}}, upsert=True)
+  await coll.update_one(filter={'_id': 'benbenid'},
+                        update={'$setOnInsert': {'value': None}}, upsert=True)
   await coll.update_one(filter={'_id': 'swiper'},
                         update={'$setOnInsert': {'value': []}}, upsert=True)
   await coll.update_one(filter={'_id': 'bulletin'},

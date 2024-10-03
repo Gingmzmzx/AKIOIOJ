@@ -1,5 +1,6 @@
 import asyncio
 import datetime
+from bson import objectid
 
 from vj4 import app
 from vj4 import constant
@@ -210,7 +211,15 @@ class UserDetailHandler(base.Handler, UserSettingsMixin):
     psdocs_hot = await psdocs_hot.sort([('vote', -1), ('doc_id', -1)]).limit(10).to_list()
 
     if self.has_perm(builtin.PERM_VIEW_DISCUSSION):
-      ddocs = discussion.get_multi(self.domain_id, owner_uid=uid)
+      benbenid = None
+      ddocs = None
+      for dom in builtin.DOMAINS:
+        if dom['_id'] == self.domain_id:
+          benbenid = await system.get_benbenid()
+          ddocs = discussion.get_multi(self.domain_id, owner_uid=uid, doc_id={"$ne":objectid.ObjectId(benbenid)})
+          break
+      else:
+        ddocs = discussion.get_multi(self.domain_id, owner_uid=uid)
       dcount = await ddocs.count()
       ddocs = await ddocs.limit(10).to_list()
       vndict = await discussion.get_dict_vnodes(self.domain_id, map(discussion.node_id, ddocs))

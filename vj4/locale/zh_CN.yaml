@@ -726,6 +726,7 @@ Profile Background Image: 背景图片
 Choose the background image in your profile page.: 选择您资料页面的背景图片。
 '{} is a moderator of this domain.': '{}是这个域的管理者之一。'
 'Top {} users': '前{}用户'
+'Only show the first {} items': '仅展示前{}条'
 He: 他
 She: 她
 Bulletin: 公告

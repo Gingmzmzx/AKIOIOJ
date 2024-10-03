@@ -9,6 +9,7 @@ from vj4.model import document
 from vj4.model import domain
 from vj4.model import oplog
 from vj4.model import user
+from vj4.model import system
 from vj4.model.adaptor import discussion
 from vj4.model.adaptor import contest
 from vj4.handler import base
@@ -24,19 +25,93 @@ def node_url(handler, name, node_or_dtuple):
   return handler.reverse_url(name, **kwargs)
 
 
+class DiscussionMixin(object):
+  def __init__(self, domain_id, remote_ip, user, own, check_perm):
+    self.domain_id = domain_id
+    self.remote_ip = remote_ip
+    self.user = user
+    self.own = own
+    self.check_perm = check_perm
+
+  async def post_reply(self, did: document.convert_doc_id, content: str):
+    ddoc = await discussion.get(self.domain_id, did)
+    await discussion.add_reply(self.domain_id, ddoc['doc_id'], self.user['_id'], content,
+                               self.remote_ip)
+
+  async def post_tail_reply(self,
+                            did: document.convert_doc_id,
+                            drid: document.convert_doc_id,
+                            content: str):
+    ddoc = await discussion.get(self.domain_id, did)
+    drdoc = await discussion.get_reply(self.domain_id, drid, ddoc['doc_id'])
+    await discussion.add_tail_reply(self.domain_id, drdoc['doc_id'], self.user['_id'], content,
+                                    self.remote_ip)
+
+  async def post_edit_reply(self, did: document.convert_doc_id,
+                            drid: document.convert_doc_id, content: str):
+    ddoc = await discussion.get(self.domain_id, did)
+    drdoc = await discussion.get_reply(self.domain_id, drid, ddoc['doc_id'])
+    if (not self.own(ddoc, builtin.PERM_EDIT_DISCUSSION_REPLY_SELF_DISCUSSION)
+        and not self.own(drdoc, builtin.PERM_EDIT_DISCUSSION_REPLY_SELF)):
+      self.check_perm(builtin.PERM_EDIT_DISCUSSION_REPLY)
+    drdoc = await discussion.edit_reply(self.domain_id, drdoc['doc_id'],
+                                        content=content)
+
+  async def post_delete_reply(self, did: document.convert_doc_id,
+                              drid: document.convert_doc_id):
+    ddoc = await discussion.get(self.domain_id, did)
+    drdoc = await discussion.get_reply(self.domain_id, drid, ddoc['doc_id'])
+    if (not self.own(ddoc, builtin.PERM_DELETE_DISCUSSION_REPLY_SELF_DISCUSSION)
+        and not self.own(drdoc, builtin.PERM_DELETE_DISCUSSION_REPLY_SELF)):
+      self.check_perm(builtin.PERM_DELETE_DISCUSSION_REPLY)
+    await oplog.add(self.user['_id'], oplog.TYPE_DELETE_DOCUMENT, doc=drdoc)
+    drdoc = await discussion.delete_reply(self.domain_id, drdoc['doc_id'])
+
+  async def post_edit_tail_reply(self, did: document.convert_doc_id,
+                                 drid: document.convert_doc_id, drrid: document.convert_doc_id,
+                                 content: str):
+    ddoc = await discussion.get(self.domain_id, did)
+    drdoc, drrdoc = await discussion.get_tail_reply(self.domain_id, drid, drrid)
+    if not drdoc or drdoc['parent_doc_id'] != ddoc['doc_id']:
+      raise error.DocumentNotFoundError(domain_id, document.TYPE_DISCUSSION_REPLY, drid)
+    if (not self.own(ddoc, builtin.PERM_EDIT_DISCUSSION_REPLY_SELF_DISCUSSION)
+        and not self.own(drrdoc, builtin.PERM_EDIT_DISCUSSION_REPLY_SELF)):
+      self.check_perm(builtin.PERM_EDIT_DISCUSSION_REPLY)
+    await discussion.edit_tail_reply(self.domain_id, drid, drrid, content)
+
+  async def post_delete_tail_reply(self, did: document.convert_doc_id,
+                                   drid: document.convert_doc_id, drrid: objectid.ObjectId):
+    ddoc = await discussion.get(self.domain_id, did)
+    drdoc, drrdoc = await discussion.get_tail_reply(self.domain_id, drid, drrid)
+    if not drdoc or drdoc['parent_doc_id'] != ddoc['doc_id']:
+      raise error.DocumentNotFoundError(domain_id, document.TYPE_DISCUSSION_REPLY, drid)
+    if (not self.own(ddoc, builtin.PERM_DELETE_DISCUSSION_REPLY_SELF_DISCUSSION)
+        and not self.own(drrdoc, builtin.PERM_DELETE_DISCUSSION_REPLY_SELF)):
+      self.check_perm(builtin.PERM_DELETE_DISCUSSION_REPLY)
+    await oplog.add(self.user['_id'], oplog.TYPE_DELETE_SUB_DOCUMENT, sub_doc=drrdoc,
+                    doc_type=drdoc['doc_type'], doc_id=drdoc['doc_id'])
+    await discussion.delete_tail_reply(self.domain_id, drid, drrid)
+
+
 @app.route('/discuss', 'discussion_main')
 class DiscussionMainHandler(base.Handler):
-  DISCUSSIONS_PER_PAGE = 15
+  DISCUSSIONS_PER_PAGE = 20
 
   @base.require_perm(builtin.PERM_VIEW_DISCUSSION)
   @base.get_argument
   @base.sanitize
   async def get(self, *, page: int=1):
+    benbenid = None
+    for dom in builtin.DOMAINS:
+      if dom['_id'] == self.domain_id:
+        benbenid = await system.get_benbenid()
+        break
+    
     # TODO(iceboy): continuation based pagination.
     nodes, (ddocs, dpcount, _) = await asyncio.gather(
         discussion.get_nodes(self.domain_id),
         # TODO(twd2): exclude problem/contest discussions?
-        pagination.paginate(discussion.get_multi(self.domain_id), page, self.DISCUSSIONS_PER_PAGE))
+        pagination.paginate(discussion.get_multi(self.domain_id, doc_id={"$ne":objectid.ObjectId(benbenid)}), page, self.DISCUSSIONS_PER_PAGE))
     udict, dudict, vndict = await asyncio.gather(
         user.get_dict(ddoc['owner_uid'] for ddoc in ddocs),
         domain.get_dict_user_by_uid(domain_id=self.domain_id, uids=(ddoc['owner_uid'] for ddoc in ddocs)),
@@ -185,9 +260,8 @@ class DiscussionDetailHandler(base.OperationHandler):
   @base.sanitize
   @base.limit_rate('add_discussion', 3600, 30)
   async def post_reply(self, *, did: document.convert_doc_id, content: str):
-    ddoc = await discussion.get(self.domain_id, did)
-    await discussion.add_reply(self.domain_id, ddoc['doc_id'], self.user['_id'], content,
-                               self.remote_ip)
+    discussionMixin = DiscussionMixin(self.domain_id, self.remote_ip, self.user, self.own, self.check_perm)
+    await discussionMixin.post_reply(did, content)
     self.json_or_redirect(self.url)
 
   @base.require_priv(builtin.PRIV_USER_PROFILE)
@@ -200,10 +274,8 @@ class DiscussionDetailHandler(base.OperationHandler):
                             did: document.convert_doc_id,
                             drid: document.convert_doc_id,
                             content: str):
-    ddoc = await discussion.get(self.domain_id, did)
-    drdoc = await discussion.get_reply(self.domain_id, drid, ddoc['doc_id'])
-    await discussion.add_tail_reply(self.domain_id, drdoc['doc_id'], self.user['_id'], content,
-                                    self.remote_ip)
+    discussionMixin = DiscussionMixin(self.domain_id, self.remote_ip, self.user, self.own, self.check_perm)
+    await discussionMixin.post_tail_reply(did, drid, content)
     self.json_or_redirect(self.url)
 
   @base.require_priv(builtin.PRIV_USER_PROFILE)
@@ -212,13 +284,8 @@ class DiscussionDetailHandler(base.OperationHandler):
   @base.sanitize
   async def post_edit_reply(self, *, did: document.convert_doc_id,
                             drid: document.convert_doc_id, content: str):
-    ddoc = await discussion.get(self.domain_id, did)
-    drdoc = await discussion.get_reply(self.domain_id, drid, ddoc['doc_id'])
-    if (not self.own(ddoc, builtin.PERM_EDIT_DISCUSSION_REPLY_SELF_DISCUSSION)
-        and not self.own(drdoc, builtin.PERM_EDIT_DISCUSSION_REPLY_SELF)):
-      self.check_perm(builtin.PERM_EDIT_DISCUSSION_REPLY)
-    drdoc = await discussion.edit_reply(self.domain_id, drdoc['doc_id'],
-                                        content=content)
+    discussionMixin = DiscussionMixin(self.domain_id, self.remote_ip, self.user, self.own, self.check_perm)
+    await discussionMixin.post_edit_reply(did, drid, content)
     self.json_or_redirect(self.url)
 
   @base.require_priv(builtin.PRIV_USER_PROFILE)
@@ -227,13 +294,8 @@ class DiscussionDetailHandler(base.OperationHandler):
   @base.sanitize
   async def post_delete_reply(self, *, did: document.convert_doc_id,
                               drid: document.convert_doc_id):
-    ddoc = await discussion.get(self.domain_id, did)
-    drdoc = await discussion.get_reply(self.domain_id, drid, ddoc['doc_id'])
-    if (not self.own(ddoc, builtin.PERM_DELETE_DISCUSSION_REPLY_SELF_DISCUSSION)
-        and not self.own(drdoc, builtin.PERM_DELETE_DISCUSSION_REPLY_SELF)):
-      self.check_perm(builtin.PERM_DELETE_DISCUSSION_REPLY)
-    await oplog.add(self.user['_id'], oplog.TYPE_DELETE_DOCUMENT, doc=drdoc)
-    drdoc = await discussion.delete_reply(self.domain_id, drdoc['doc_id'])
+    discussionMixin = DiscussionMixin(self.domain_id, self.remote_ip, self.user, self.own, self.check_perm)
+    await discussionMixin.post_delete_reply(did, drid)
     self.json_or_redirect(self.url)
 
   @base.require_priv(builtin.PRIV_USER_PROFILE)
@@ -243,14 +305,8 @@ class DiscussionDetailHandler(base.OperationHandler):
   async def post_edit_tail_reply(self, *, did: document.convert_doc_id,
                                  drid: document.convert_doc_id, drrid: document.convert_doc_id,
                                  content: str):
-    ddoc = await discussion.get(self.domain_id, did)
-    drdoc, drrdoc = await discussion.get_tail_reply(self.domain_id, drid, drrid)
-    if not drdoc or drdoc['parent_doc_id'] != ddoc['doc_id']:
-      raise error.DocumentNotFoundError(domain_id, document.TYPE_DISCUSSION_REPLY, drid)
-    if (not self.own(ddoc, builtin.PERM_EDIT_DISCUSSION_REPLY_SELF_DISCUSSION)
-        and not self.own(drrdoc, builtin.PERM_EDIT_DISCUSSION_REPLY_SELF)):
-      self.check_perm(builtin.PERM_EDIT_DISCUSSION_REPLY)
-    await discussion.edit_tail_reply(self.domain_id, drid, drrid, content)
+    discussionMixin = DiscussionMixin(self.domain_id, self.remote_ip, self.user, self.own, self.check_perm)
+    await discussionMixin.post_edit_tail_reply(did, drid, drrid, content)
     self.json_or_redirect(self.url)
 
   @base.require_priv(builtin.PRIV_USER_PROFILE)
@@ -259,16 +315,8 @@ class DiscussionDetailHandler(base.OperationHandler):
   @base.sanitize
   async def post_delete_tail_reply(self, *, did: document.convert_doc_id,
                                    drid: document.convert_doc_id, drrid: objectid.ObjectId):
-    ddoc = await discussion.get(self.domain_id, did)
-    drdoc, drrdoc = await discussion.get_tail_reply(self.domain_id, drid, drrid)
-    if not drdoc or drdoc['parent_doc_id'] != ddoc['doc_id']:
-      raise error.DocumentNotFoundError(domain_id, document.TYPE_DISCUSSION_REPLY, drid)
-    if (not self.own(ddoc, builtin.PERM_DELETE_DISCUSSION_REPLY_SELF_DISCUSSION)
-        and not self.own(drrdoc, builtin.PERM_DELETE_DISCUSSION_REPLY_SELF)):
-      self.check_perm(builtin.PERM_DELETE_DISCUSSION_REPLY)
-    await oplog.add(self.user['_id'], oplog.TYPE_DELETE_SUB_DOCUMENT, sub_doc=drrdoc,
-                    doc_type=drdoc['doc_type'], doc_id=drdoc['doc_id'])
-    await discussion.delete_tail_reply(self.domain_id, drid, drrid)
+    discussionMixin = DiscussionMixin(self.domain_id, self.remote_ip, self.user, self.own, self.check_perm)
+    await discussionMixin.post_delete_tail_reply(did, drid, drrid)
     self.json_or_redirect(self.url)
 
   @base.require_priv(builtin.PRIV_USER_PROFILE)
