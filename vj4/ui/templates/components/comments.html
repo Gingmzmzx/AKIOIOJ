@@ -12,6 +12,7 @@
   reply_edit_self_perm,
   reply_delete_perm,
   reply_delete_self_perm,
+  force_edit_priv,
   comment_placeholder = 'Write Your Comment',
   comment_post_op = 'reply',
   comment_edit_op = 'edit_reply',
@@ -22,7 +23,8 @@
   reply_edit_op = 'edit_tail_reply',
   reply_edit_text = 'Update',
   comment_delete_op = 'delete_reply',
-  reply_delete_op = 'delete_tail_reply'
+  reply_delete_op = 'delete_tail_reply',
+  benbenid=None
 ) %}
 {% import "components/comments_base.html" as comment_base with context %}
 {% import "components/comments_"~view~".html" as comment_impl with context %}

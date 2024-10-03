@@ -222,6 +222,14 @@ class DiscussionDetailHandler(base.OperationHandler):
   @base.route_argument
   @base.sanitize
   async def get(self, *, did: document.convert_doc_id, page: int=1):
+    benbenid = None
+    for dom in builtin.DOMAINS:
+      if dom['_id'] == self.domain_id:
+        benbenid = await system.get_benbenid()
+        if benbenid != did:
+          benbenid = None
+        break
+
     ddoc = await discussion.inc_views(self.domain_id, did)
     if self.has_priv(builtin.PRIV_USER_PROFILE):
       dsdoc = await discussion.get_status(self.domain_id, ddoc['doc_id'], self.user['_id'])
@@ -249,9 +257,10 @@ class DiscussionDetailHandler(base.OperationHandler):
         (self.translate('discussion_main'), self.reverse_url('discussion_main')),
         (vnode['title'], node_url(self, 'discussion_node', discussion.node_id(ddoc))),
         (ddoc['title'], None))
+    
     self.render('discussion_detail.html', page_title=ddoc['title'], path_components=path_components,
                 ddoc=ddoc, dsdoc=dsdoc, drdocs=drdocs, page=page, pcount=pcount, drcount=drcount,
-                vnode=vnode, udict=udict, dudict=dudict)
+                vnode=vnode, udict=udict, dudict=dudict, benbenid=benbenid)
 
   @base.require_priv(builtin.PRIV_USER_PROFILE)
   @base.require_perm(builtin.PERM_REPLY_DISCUSSION)

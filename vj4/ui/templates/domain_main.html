@@ -231,7 +231,7 @@
   {% if benbenid %}{% import "components/comments.html" as comments with context %}
     <div class="section">
       <div class="section__header">
-        <h1 class="section__title">{{ _('犇犇') }}</h1>
+        <h1 class="section__title">{{ _('Updates') }}</h1>
       </div>
       <div class="section__body">
         {{ comments.render(
@@ -249,13 +249,15 @@
           reply_edit_perm = vj4.model.builtin.PERM_NONE if handler.own(ddoc, vj4.model.builtin.PERM_EDIT_DISCUSSION_REPLY_SELF_DISCUSSION) else vj4.model.builtin.PERM_EDIT_DISCUSSION_REPLY,
           reply_edit_self_perm = vj4.model.builtin.PERM_EDIT_DISCUSSION_REPLY_SELF,
           reply_delete_perm = vj4.model.builtin.PERM_NONE if handler.own(ddoc, vj4.model.builtin.PERM_DELETE_DISCUSSION_REPLY_SELF_DISCUSSION) else vj4.model.builtin.PERM_DELETE_DISCUSSION_REPLY,
-          reply_delete_self_perm = vj4.model.builtin.PERM_DELETE_DISCUSSION_REPLY_SELF
+          reply_delete_self_perm = vj4.model.builtin.PERM_DELETE_DISCUSSION_REPLY_SELF,
+          force_edit_priv = vj4.model.builtin.PRIV_ADMIN,
+          benbenid=benbenid
         ) }}
       {% if drcount == 0 %}
         {{ nothing.render('No comments so far...') }}
       {% endif %}
       {% if pcount > 1 %}
-        <div style="text-align:center;"><a href="{{ reverse_url('discussion_detail', did=benbenid) }}" target="_blank">查看更多犇犇</a></div>
+        <div style="text-align:center;"><a href="{{ reverse_url('discussion_detail', did=benbenid) }}" target="_blank">{{ _("View more Updates") }}</a></div>
       {% endif %}
       </div>
     </div>
