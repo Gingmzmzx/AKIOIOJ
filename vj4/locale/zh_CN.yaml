@@ -11,6 +11,8 @@ admin_dashboard: 管理员面板
 admin_user: 管理用户
 admin_privilege: 管理特权
 Updates Manager: 动态管理者
+Collapse: 收起
+Expand: 展开
 Apply this discussion as Updates: 将此讨论应用为动态
 Welcome to AKIOI OJ Admin Dashboard: 欢迎来到管理员面板
 "User {0}: Privilege": "用户{0}的特权"

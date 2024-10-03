@@ -1,5 +1,6 @@
 import { NamedPage } from 'vj/misc/PageLoader';
 import VSwiper from 'vj/components/swiper';
+import Truncate from 'vj/components/truncate';
 
 const page = new NamedPage('domain_main', () => {
   $(function(){
@@ -18,6 +19,8 @@ const page = new NamedPage('domain_main', () => {
 
       const swiper = new VSwiper("#swiper", swiper_list);
     }
+
+    new Truncate('.truncate', 40);
   });
 });
 

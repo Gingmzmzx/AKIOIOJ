@@ -66,6 +66,8 @@ module.exports = {
       150,
     ],
     quotes: 'warn',
+    'no-param-reassign': 'warn',
+    'prefer-template': 'off',
     'func-names': 'off',
     'class-methods-use-this': 'off',
     'consistent-return': 'warn',
