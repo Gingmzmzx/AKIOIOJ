@@ -250,7 +250,7 @@
           reply_edit_self_perm = vj4.model.builtin.PERM_EDIT_DISCUSSION_REPLY_SELF,
           reply_delete_perm = vj4.model.builtin.PERM_NONE if handler.own(ddoc, vj4.model.builtin.PERM_DELETE_DISCUSSION_REPLY_SELF_DISCUSSION) else vj4.model.builtin.PERM_DELETE_DISCUSSION_REPLY,
           reply_delete_self_perm = vj4.model.builtin.PERM_DELETE_DISCUSSION_REPLY_SELF,
-          force_edit_priv = vj4.model.builtin.PRIV_ADMIN,
+          force_edit_priv = vj4.model.builtin.PRIV_BENBENOP,
           benbenid=benbenid
         ) }}
       {% if drcount == 0 %}

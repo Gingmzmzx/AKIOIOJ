@@ -385,12 +385,22 @@ class DiscussionEditHandler(base.OperationHandler):
   @base.route_argument
   @base.sanitize
   async def get(self, *, did: document.convert_doc_id):
+    benbenid = None
+    main_domain = False
+    for dom in builtin.DOMAINS:
+      if dom['_id'] == self.domain_id:
+        main_domain = True
+        benbenid = await system.get_benbenid()
+        if benbenid != did:
+          benbenid = None
+        break
+
     ddoc = await discussion.get(self.domain_id, did)
     if not ddoc:
       raise error.DiscussionNotFoundError(self.domain_id, did)
     if not self.own(ddoc, builtin.PERM_EDIT_DISCUSSION_SELF):
       self.check_perm(builtin.PERM_EDIT_DISCUSSION)
-    self.render('discussion_edit.html', ddoc=ddoc)
+    self.render('discussion_edit.html', ddoc=ddoc, main_domain=main_domain, benbenid=benbenid)
 
   @base.route_argument
   @base.require_csrf_token
@@ -424,3 +434,11 @@ class DiscussionEditHandler(base.OperationHandler):
     await oplog.add(self.user['_id'], oplog.TYPE_DELETE_DOCUMENT, doc=ddoc)
     await discussion.delete(self.domain_id, did)
     self.json_or_redirect(node_url(self, 'discussion_node', discussion.node_id(ddoc)))
+
+  @base.route_argument
+  @base.require_csrf_token
+  @base.sanitize
+  async def post_set_benbenid(self, *, did: document.convert_doc_id):
+    await system.set_benbenid(did)
+    self.json_or_redirect(self.reverse_url('discussion_edit', did=did))
+

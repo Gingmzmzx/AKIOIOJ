@@ -191,6 +191,7 @@ PRIV_DELETE_FILE_SELF = 1 << 19
 PRIV_USER_SET_CHEAT = 1 << 20
 PRIV_USER_SET_MEMORIAL_ACCOUNT = 1 << 22
 PRIV_ADMIN = 1 << 21
+PRIV_BENBENOP = 1 << 23
 PRIV_ALL = -1
 
 Privilege = collections.namedtuple('Privilege',
@@ -221,6 +222,7 @@ PRIVS = [
     Privilege("priv_user_set_cheat", PRIV_USER_SET_CHEAT, "Cheater Manager"),
     Privilege("priv_user_set_memorial_account", PRIV_USER_SET_MEMORIAL_ACCOUNT, "Memorial Account Manager"),
     Privilege("priv_admin", PRIV_ADMIN, "Use Admin Dashboard"),
+    Privilege("priv_benbenop", PRIV_BENBENOP, "Updates Manager"),
 ]
 
 PRIVS_BY_FAMILY = collections.OrderedDict(

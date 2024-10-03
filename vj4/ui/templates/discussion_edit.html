@@ -16,6 +16,11 @@
               {{ _('Delete') }}
             </button>
           {% endif %}
+          {% if handler.has_priv(vj4.model.builtin.PRIV_BENBENOP) and (not benbenid) and main_domain %}
+            <button name="operation" value="set_benbenid" type="submit" class="rounded button">
+              {{ _('Apply this discussion as Updates') }}
+            </button>
+          {% endif %}
             <button type="button" class="rounded button" onclick="window.history.go(-1)">
               {{ _('Cancel') }}
             </button>
