@@ -63,3 +63,21 @@ class AdminPrivilegeHandler(base.Handler):
     await user.set_priv(int(uid), privs)
     self.json_or_redirect(self.reverse_url("admin_user"))
 
+
+@app.route('/admin/mail', 'admin_mail')
+class AdminMailHandler(base.OperationHandler):
+  @base.require_priv(builtin.PRIV_ADMIN)
+  async def get(self):
+    udocs = []
+    async for udoc in user.get_multi():
+      udocs.append(udoc)
+    self.render('admin_mail.html', udocs=udocs)
+
+  @base.require_priv(builtin.PRIV_ADMIN)
+  @base.require_csrf_token
+  @base.sanitize
+  async def post_send_mail(self, *, uid: int, title: str, content: str):
+    udict = await user.get_by_uid(uid)
+    mail = udict['mail']
+    await self.send_mail(mail, "通知 - "+str(title), "broadcast_mail.html", mail_content=content, mail_title=title)
+    self.json_or_redirect(self.url, mail=mail)

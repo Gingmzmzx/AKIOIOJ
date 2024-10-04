@@ -1,0 +1,63 @@
+{% extends "admin_base.html" %}
+{% block admin_content %}
+<div class="section">
+    <div class="section__header">
+      <h1 class="section__title">{{ _('Send mail to selected users') }}</h1>
+    </div>
+    {{ noscript_note.render() }}
+    <div class="section__body no-padding admin_user_list">
+      <table class="data-table">
+        <colgroup>
+          <col class="col--checkbox">
+          <col class="col--uid">
+          <col class="col--user">
+        </colgroup>
+        <thead>
+          <tr>
+            <th class="col--checkbox">
+              <label class="compact checkbox">
+                <input type="checkbox" name="select_all" data-checkbox-toggle="user">
+              </label>
+            </th>
+            <th class="col--uid">{{ _('User ID') }}</th>
+            <th class="col--user">{{ _('Username') }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for udoc in udocs %}
+          <tr data-uid="{{ udoc['_id'] }}" data-badge="{%if udoc['tags'] %}{{ ' '.join(udoc['tags']) }}{% endif %}">
+              <td class="col--checkbox">
+                <label class="compact checkbox">
+                  <input type="checkbox" data-checkbox-group="user">
+                </label>
+              </td>
+              <td class="col--uid">
+                {{ udoc['_id'] }}
+              </td>
+              <td class="col--user">
+                {{ user.render_inline(udoc) }}
+              </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+<div class="section">
+    <div class="section__header">
+      <h1 class="section__title">{{ _('Mail Content') }}</h1>
+    </div>
+  <div class="section__body" id="mail_content_container">
+      {% include "partials/admin_send_mail_form.html" %}
+      <div class="row"><div class="columns">
+        <button type="submit" name="btn_send_mail" class="rounded primary button">
+          {{ _('Send') }}
+        </button>
+        <button type="button" class="rounded button" onclick="window.history.go(-1)">
+          {{ _('Cancel') }}
+        </button>
+      </div></div>
+  </div>
+</div>
+{% endblock %}

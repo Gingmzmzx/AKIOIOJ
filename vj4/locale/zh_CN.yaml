@@ -10,6 +10,11 @@ Tools: 工具
 admin_dashboard: 管理员面板
 admin_user: 管理用户
 admin_privilege: 管理特权
+admin_mail: 邮件广播
+Mail Content: 邮件内容
+Send mail to selected users: 发送邮件到指定用户
+Mail successfully sent to uid:{0}.: 发送邮件成功(UID:{0})
+Confirm sending Email to selected users?: 确定要给选定用户发送广播邮件？
 Updates Manager: 动态管理者
 Collapse: 收起
 Expand: 展开

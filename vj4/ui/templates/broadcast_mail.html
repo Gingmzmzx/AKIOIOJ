@@ -1,0 +1,9 @@
+{% extends "layout/mail.html" %}
+{% block title %}{{ mail_title }}{% endblock %}
+{% block content %}
+{{ mail_content|safe }}
+<br />
+<br />
+<br />
+<i>This is a broadcast email. Do not reply.</i>
+{% endblock %}

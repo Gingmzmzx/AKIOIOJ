@@ -1,0 +1,3 @@
+{% import "components/form.html" as form with context %}
+{{ form.form_text(label='Title', name='title', autofocus=true, required=true) }}
+{{ form.form_textarea(columns=20, label='Content', name='content', hotkeys='ctrl+enter:submit', required=true) }}

@@ -26,11 +26,6 @@ from vj4.util import options
 from vj4.util import pagination
 
 
-@app.route('/test/header', 'test_header')
-class TestHeaderHandler(base.Handler):
-  async def get(self):
-    self.render('bsod.html', args=self.request.headers)
-
 @app.route('/', 'domain_main')
 class DomainMainHandler(contest.ContestStatusMixin, base.OperationHandler):
   CONTESTS_ON_MAIN = 5
