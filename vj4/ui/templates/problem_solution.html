@@ -31,7 +31,8 @@
           reply_edit_perm = vj4.model.builtin.PERM_EDIT_PROBLEM_SOLUTION_REPLY,
           reply_edit_self_perm = vj4.model.builtin.PERM_EDIT_PROBLEM_SOLUTION_REPLY_SELF,
           reply_delete_perm = vj4.model.builtin.PERM_DELETE_PROBLEM_SOLUTION_REPLY,
-          reply_delete_self_perm = vj4.model.builtin.PERM_DELETE_PROBLEM_SOLUTION_REPLY_SELF
+          reply_delete_self_perm = vj4.model.builtin.PERM_DELETE_PROBLEM_SOLUTION_REPLY_SELF,
+          force_edit_priv = vj4.model.builtin.PRIV_BENBENOP
         ) }}
         {{ paginator.render(page, pcount) }}
       {% if pscount == 0 %}
