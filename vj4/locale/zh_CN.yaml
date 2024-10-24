@@ -12,6 +12,10 @@ admin_user: 管理用户
 admin_privilege: 管理特权
 admin_mail: 邮件广播
 Mail Content: 邮件内容
+The problem creator or administrator does not allow downloading of the testdata: 题目创建者或管理员不允许下载测试数据
+Read data of problems that disable downloading: 读取不允许下载数据的题目的数据
+Disable downloading of testdata: 禁止下载测试数据
+Problem creators and users with the PERM_READ_PROBLEM_DATA_DISABLED_DOWNLOAD permission will be able to download data: 题目创建者以及拥有PERM_READ_PROBLEM_DATA_DISABLED_DOWNLOAD权限的用户将可以下载数据
 Send mail to selected users: 发送邮件到指定用户
 Mail successfully sent to uid:{0}.: 发送邮件成功(UID:{0})
 Confirm sending Email to selected users?: 确定要给选定用户发送广播邮件？
