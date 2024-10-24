@@ -31,6 +31,7 @@ PERM_VIEW_PROBLEM_HIDDEN = 1 << 8
 PERM_SUBMIT_PROBLEM = 1 << 9
 PERM_READ_PROBLEM_DATA = 1 << 10
 PERM_READ_PROBLEM_DATA_SELF = 1 << 11
+PERM_READ_PROBLEM_DATA_DISABLED_DOWNLOAD = 1 << 62
 PERM_READ_RECORD_CODE = 1 << 12
 PERM_REJUDGE_PROBLEM = 1 << 13
 PERM_REJUDGE = 1 << 14
@@ -112,6 +113,7 @@ PERMS = [
     Permission('perm_problem', PERM_SUBMIT_PROBLEM, 'Submit problem'),
     Permission('perm_problem', PERM_READ_PROBLEM_DATA, 'Read data of problem'),
     Permission('perm_problem', PERM_READ_PROBLEM_DATA_SELF, 'Read data of own problems'),
+    Permission('perm_problem', PERM_READ_PROBLEM_DATA_DISABLED_DOWNLOAD, 'Read data of problems that disable downloading'),
     Permission('perm_record', PERM_READ_RECORD_CODE, 'Read record codes'),
     Permission('perm_record', PERM_REJUDGE_PROBLEM, 'Rejudge problems'),
     Permission('perm_record', PERM_REJUDGE, 'Rejudge records'),

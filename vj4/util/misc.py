@@ -1,13 +1,14 @@
 import base64
 import hashlib
 import hoedown
-#   import markdown as mdparser
 try:  # 懒得重构镜像了，凑活着用吧（
   import bleach
+  # import markdown as mdparser
 except ImportError:
   import pip
-  pip.main("install bleach".split())
+  pip.main("install bleach markdown".split())
   import bleach
+  # import markdown as mdparser
 import jinja2
 import markupsafe
 import re
@@ -103,16 +104,15 @@ def markdown(text):
   #       'markdown.extensions.admonition',
   #       'markdown.extensions.codehilite',
   #       'markdown.extensions.meta',
-  #       'markdown_katex',
-  #   ],
-  #   extension_configs={
-  #       'markdown_katex': {
-  #           'no_inline_svg': True,      # fix for WeasyPrint
-  #           'insert_fonts_css': True,
-  #       },
-  #   }
+  #       'markdown.extensions.md_in_html',
+  #       'markdown.extensions.nl2br',
+  #       'markdown.extensions.legacy_attrs',
+  #       'markdown.extensions.legacy_em'
+  #   ]
   # )
-  # return markupsafe.Markup(md_ctx)
+  # clean_html = bleach.clean(md_ctx, tags=ALLOWED_TAGS, attributes=ALLOWED_ATTRIBUTES)
+  # clean_html = clean_html.replace("<iframe ", "<iframe sandbox='allow-scripts' ")
+  # return markupsafe.Markup(clean_html)
 
   # hoedown库进行渲染
   md_ctx = hoedown.html(

@@ -128,6 +128,12 @@ class ProblemDataNotFoundError(NotFoundError):
     return 'Data of problem {1} not found.'
 
 
+class ProblemDataPermissionError(ForbiddenError):
+  @property
+  def message(self):
+    return 'The problem creator or administrator does not allow downloading of the testdata'
+
+
 class RecordDataNotFoundError(NotFoundError):
   @property
   def message(self):

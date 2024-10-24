@@ -574,6 +574,8 @@ class ProblemDataHandler(base.Handler):
       return self.redirect(self.reverse_url('problem_data',
                            domain_id=pdoc['data']['domain'],
                            pid=pdoc['data']['pid']))
+    if pdoc.get('disable_download', False) and (not self.has_perm(builtin.PERM_READ_PROBLEM_DATA_DISABLED_DOWNLOAD)):
+      raise error.ProblemDataPermissionError()
     if (not self.own(pdoc, builtin.PERM_READ_PROBLEM_DATA_SELF)
         and not self.has_perm(builtin.PERM_READ_PROBLEM_DATA)):
       self.check_priv(builtin.PRIV_READ_PROBLEM_DATA)
@@ -722,7 +724,7 @@ class ProblemSettingsHandler(base.Handler):
   @base.post_argument
   @base.require_csrf_token
   @base.sanitize
-  async def post(self, *, pid: document.convert_doc_id, hidden: bool=False,
+  async def post(self, *, pid: document.convert_doc_id, hidden: bool=False, disable_download: bool=False,
                  category: str, tag: str,
                  difficulty_setting: int, difficulty_admin: str='',
                  ac_msg: str=''):
@@ -747,7 +749,7 @@ class ProblemSettingsHandler(base.Handler):
     await problem.edit(self.domain_id, pdoc['doc_id'], hidden=hidden,
                        category=category, tag=tag,
                        difficulty_setting=difficulty_setting, difficulty_admin=difficulty_admin,
-                       ac_msg=ac_msg)
+                       ac_msg=ac_msg, disable_download=disable_download)
     await job.difficulty.update_problem(self.domain_id, pdoc['doc_id'])
     self.json_or_redirect(self.reverse_url('problem_detail', pid=pid))
 
