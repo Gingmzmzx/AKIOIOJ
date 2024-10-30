@@ -31,21 +31,22 @@ export default class Truncate {
   checkHeight(container, mask, maxHeight) {
     if (container.scrollHeight > maxHeight) {
       container.style.maxHeight = maxHeight + 'px';
-      mask.style.display = 'block';
+      mask.classList.add('visible'); // 显示遮罩
     } else {
       container.style.maxHeight = 'none';
-      mask.style.display = 'none';
+      mask.classList.remove('visible'); // 隐藏遮罩
     }
   }
 
   toggleContent(container, mask, button, maxHeight, isExpanded) {
     if (isExpanded) {
       container.style.maxHeight = maxHeight + 'px';
-      mask.style.display = 'block';
+      mask.classList.add('visible'); // 显示遮罩
       button.innerHTML = `<span class="icon icon-expand_more"></span>${i18n("Expand")}`;
     } else {
-      container.style.maxHeight = 'none';
-      mask.style.display = 'none';
+      const fullHeight = container.scrollHeight + 'px'; // 动态获取完整高度
+      container.style.maxHeight = fullHeight;
+      mask.classList.remove('visible'); // 隐藏遮罩
       button.innerHTML = `<span class="icon icon-expand_less"></span>${i18n("Collapse")}`;
     }
     return !isExpanded; // 返回更新后的状态
