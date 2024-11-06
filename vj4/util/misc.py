@@ -32,13 +32,21 @@ MARKDOWN_RENDER_FLAGS = ( # hoedown.HTML_ESCAPE |  # Escape all HTML.
 ALLOWED_TAGS = bleach.sanitizer.ALLOWED_TAGS + [
     'table', 'tbody', 'thead', 'tr', 'th', 'td',
     'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-    'blockquote', 'p', 'b', 'i', 'u', 'strong', 'em', 'sup', 'a', 'img', 'del', 'mark', 'br', 'hr',
+    'blockquote', 'q', 'p', 'b', 'i', 'u', 'strong', 'em', 'sup', 'a', 'img', 'del', 'mark', 'br', 'hr',
     'div', 'span', 'iframe',
     'pre', 'code']
 ALLOWED_ATTRIBUTES = {
     'a': ['href', 'title', 'style'],
     'img': ['src', 'alt', 'style'],
     'div': ['class', 'style'],
+    'p': ['class', 'style'],
+    'q': ['class', 'style'],
+    'b': ['class', 'style'],
+    'i': ['class', 'style'],
+    'u': ['class', 'style'],
+    'strong': ['class', 'style'],
+    'sup': ['class', 'style'],
+    'em': ['class', 'style'],
     'span': ['class', 'style'],
     'th': ['class', 'style'],
     'td': ['class', 'style'],
