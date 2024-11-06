@@ -259,6 +259,7 @@
         {{ nothing.render('No comments so far...') }}
       {% endif %}
       {% if pcount > 1 %}
+        <hr>
         <div style="text-align:center;"><a href="{{ reverse_url('discussion_detail', did=benbenid) }}" target="_blank">{{ _("View more Updates") }}</a></div>
       {% endif %}
       </div>
