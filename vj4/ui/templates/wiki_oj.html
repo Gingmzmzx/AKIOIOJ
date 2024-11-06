@@ -2,11 +2,20 @@
 {% block wiki_content %}
     <div class="section" data-heading-extract-to="#menu-item-wiki_oj">
       <div class="section__header">
-        <h1 class="section__title" id="domain" data-heading>{{ _('No Content') }}</h1>
+        <h1 class="section__title" id="update_log" data-heading>{{ _('更新记录') }}</h1>
       </div>
       <div class="section__body typo">
         {{ _('no_translation_warn')|safe }}
-        <p>No Content</p>
+        <p>从2024/09/19开始记录更新日志</p>
+        <ul>
+          <li>upd on 2024/09/19: 鉴于目前评测系统环境已经过时，加之安全性有待提升，拟更新评测系统</li>
+          <li>upd on 2024/09/26: 评测系统已经更新，但是暂时不支持Java、Pascal、Golang、C#语言的提交<br>
+            请注意使用`Python`和`Python3`语言的提交实质都是<code>Python3.11.2</code>；PHP版本<code>8.2.20</code>；更多环境信息见[帮助](/wiki/help)</li>
+          <li>upd on 2024/09/30: 新增了域自定义CSS和自定义页脚，以及纪念账号功能！</li>
+          <li>upd on 2024/09/30: 更新了Markdown渲染，详见<a href="/discuss/66fab4a8bdda6c00010b3137">Markdown Manual for AKIOI OJ</a></li>
+          <li>upd on 2024/10/03: 上线了犇犇（动态）功能</li>
+          <li>upd on 2024/11/02: 更新测评系统，添加时限上限</li>
+        </ul>
       </div>
     </div>
 {% endblock %}
