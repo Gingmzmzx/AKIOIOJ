@@ -195,3 +195,12 @@ def dedupe(list):
     result.append(i)
     result_set.add(i)
   return result
+
+
+def is_digit(value):
+  if isinstance(value, str):
+    return value.isdigit()
+  elif isinstance(value, int):
+    return True
+  return False
+

@@ -146,7 +146,7 @@
                 </div>
                 <div class="section__body">
                 {% for psdoc in psdocs_hot %}
-                  <p><a href="{{ reverse_url('problem_solution', pid=psdoc['parent_doc_id']) }}">PS{{ psdoc['doc_id'] }}</a></p>
+                  <p><small>{% if psdoc['parent_doc_id']|isdigit %}P{% endif %}{{ psdoc['parent_doc_id'] }}</small>   <a href="{{ reverse_url('problem_solution', pid=psdoc['parent_doc_id']) }}">PS_{{ psdoc['doc_id'] }}</a></p>
                 {% endfor %}
                 </div>
                 <div class="section__header">
@@ -154,7 +154,7 @@
                 </div>
                 <div class="section__body">
                 {% for psdoc in psdocs %}
-                  <p><a href="{{ reverse_url('problem_solution', pid=psdoc['parent_doc_id']) }}">PS{{ psdoc['doc_id'] }}</a></p>
+                  <p><small>{% if psdoc['parent_doc_id']|isdigit %}P{% endif %}{{ psdoc['parent_doc_id'] }}</small>   <a href="{{ reverse_url('problem_solution', pid=psdoc['parent_doc_id']) }}">PS_{{ psdoc['doc_id'] }}</a></p>
                 {% endfor %}
                 </div>
               {% endif %}{# if psdocs #}
