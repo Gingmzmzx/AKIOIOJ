@@ -8,8 +8,8 @@ from vj4.util import version
 
 # Blessings
 BLESSING = True # Modify and restart
-BLESSING_MESSAGE = "CSP-JS 2024 RP++!!!"
-BLESSING_CONTENT = "# 祝大家CSP-JSX / NOIP 2024 RP++!"
+BLESSING_MESSAGE = "NOIP 2024 RP++!!!"
+BLESSING_CONTENT = "# 祝大家 NOIP 2024 RP++!"
 
 # Permissions.
 PERM_NONE = 0
