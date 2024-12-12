@@ -11,6 +11,7 @@ admin_dashboard: 管理员面板
 admin_user: 管理用户
 admin_privilege: 管理特权
 admin_mail: 邮件广播
+AFOed: 已退役
 Mail Content: 邮件内容
 The problem creator or administrator does not allow downloading of the testdata: 题目创建者或管理员不允许下载测试数据
 Read data of problems that disable downloading: 读取不允许下载数据的题目的数据

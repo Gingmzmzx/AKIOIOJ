@@ -7,9 +7,9 @@ from vj4 import constant
 from vj4.util import version
 
 # Blessings
-BLESSING = True # Modify and restart
-BLESSING_MESSAGE = "NOIP 2024 RP++!!!"
-BLESSING_CONTENT = "# 祝大家 NOIP 2024 RP++!"
+BLESSING = False # Modify and restart
+BLESSING_MESSAGE = "CSP-JS/NOIP 2025 RP++!!!"
+BLESSING_CONTENT = "# 祝大家 CSP-JS/NOIP 2025 RP++!"
 
 # Permissions.
 PERM_NONE = 0
