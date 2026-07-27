@@ -48,7 +48,40 @@ class HomeSecurityHandler(base.OperationHandler):
     } for session in sessions)
     self.render('home_security.html', sessions=annotated_sessions)
 
-  # Password and email change are handled by the OAuth provider (NetEssX).
+  @base.require_priv(builtin.PRIV_USER_PROFILE)
+  @base.require_csrf_token
+  @base.sanitize
+  async def post_change_password(self, *,
+                                 current_password: str,
+                                 new_password: str,
+                                 verify_password: str):
+    if new_password != verify_password:
+      raise error.VerifyPasswordError()
+    doc = await user.change_password(self.user['_id'], current_password, new_password)
+    if not doc:
+      raise error.CurrentPasswordError(self.user['_id'])
+    self.json_or_redirect(self.url)
+
+  @base.require_priv(builtin.PRIV_USER_PROFILE)
+  @base.require_csrf_token
+  @base.sanitize
+  @base.limit_rate('send_mail', 3600, 30)
+  async def post_change_mail(self, *, current_password: str, mail: str):
+    validator.check_mail(mail)
+    udoc, mail_holder_udoc = await asyncio.gather(
+      user.check_password_by_uid(self.user['_id'], current_password),
+      user.get_by_mail(mail))
+    if not udoc:
+      raise error.CurrentPasswordError(self.user['uname'])
+    if mail_holder_udoc:
+      raise error.UserAlreadyExistError(mail)
+    rid, _ = await token.add(token.TYPE_CHANGEMAIL,
+                             options.changemail_token_expire_seconds,
+                             uid=udoc['_id'], mail=mail)
+    await self.send_mail(mail, 'Change Email', 'user_changemail_mail.html',
+                         url=self.reverse_url('user_changemail_with_code', code=rid),
+                         uname=udoc['uname'])
+    self.render('user_changemail_mail_sent.html')
 
   @base.require_priv(builtin.PRIV_USER_PROFILE)
   @base.require_csrf_token

@@ -28,7 +28,11 @@ options.define('cookie_domain', default='', help='Cookie domain.')
 options.define('cookie_secure', default=False, help='Enable secure cookie flag.')
 options.define('changemail_token_expire_seconds', default=3600,
                help='Expire time for changemail token, in seconds.')
-options.define('url_prefix', default='https://oj.netessx.com', help='URL prefix.')
+options.define('registration_token_expire_seconds', default=86400,
+               help='Expire time for registration token, in seconds.')
+options.define('lostpass_token_expire_seconds', default=3600,
+               help='Expire time for lostpass token, in seconds.')
+options.define('url_prefix', default='http://127.0.0.1:8888', help='URL prefix.')
 options.define('cdn_prefix', default='/', help='CDN prefix.')
 options.define('default_avatar', default='https://netessx.com/statics/img/logo-nobg.png', help='Default avatar URL.')
 options.define('sentry_dsn', default='', help='Sentry integration DSN.')

@@ -21,6 +21,8 @@ from vj4.model.adaptor import problem
 from vj4.model.adaptor import setting
 from vj4.util import misc
 from vj4.util import options
+from vj4.util import pagination
+from vj4.util import validator
 from vj4.handler import base
 
 _logger = logging.getLogger(__name__)
@@ -43,30 +45,109 @@ class UserSettingsMixin(object):
       return None
 
 
+# ── Password-based Login / Lost Password ──
+
 @app.route('/login', 'user_login', global_route=True)
 class UserLoginHandler(base.Handler):
-  """Redirect user to NetEssX OAuth authorization endpoint."""
-
-  SCOPE = 'user:profile user:email'
-
   async def get(self):
     if self.has_priv(builtin.PRIV_USER_PROFILE):
       self.redirect(self.reverse_url('domain_main'))
       return
-    if not options.oauth_client_id or not options.oauth_client_secret:
-      raise error.UserFacingError('OAuth is not configured.')
-    state = secrets.token_urlsafe(32)
-    self.session['oauth_state'] = state
-    params = {
-      'client_id': options.oauth_client_id,
-      # 'redirect_uri': options.url_prefix.rstrip('/') + '/oauth/callback',
-      'redirect_uri': 'http://127.0.0.1:8888/oauth/callback',
-      'response_type': 'code',
-      'scope': self.SCOPE,
-      'state': state,
-    }
-    auth_url = options.oauth_auth_base.rstrip('/') + '/oauth/authorize?' + parse.urlencode(params)
-    self.redirect(auth_url)
+    # If ?oauth=1 is in query, redirect to OAuth authorize
+    if self.request.query.get('oauth') == '1':
+      if not options.oauth_client_id or not options.oauth_client_secret:
+        raise error.UserFacingError('OAuth is not configured.')
+      state = secrets.token_urlsafe(32)
+      self.session['oauth_state'] = state
+      self.redirect(_build_oauth_url(state))
+      return
+    self.render('user_login.html',
+                oauth_configured=bool(options.oauth_client_id and options.oauth_client_secret))
+
+  @base.post_argument
+  @base.sanitize
+  async def post(self, *, uname: str, password: str, rememberme: bool=False):
+    udoc = await user.check_password_by_uname(uname, password, auto_upgrade=True)
+    if not udoc:
+      raise error.LoginError(uname)
+    await asyncio.gather(user.set_by_uid(udoc['_id'],
+                                         loginat=datetime.datetime.utcnow(),
+                                         loginip=self.remote_ip),
+                         self.update_session(new_saved=rememberme, uid=udoc['_id']))
+    self.json_or_redirect(self.referer_or_main)
+
+
+@app.route('/lostpass', 'user_lostpass', global_route=True)
+class UserLostpassHandler(base.Handler):
+  @base.require_priv(builtin.PRIV_REGISTER_USER)
+  async def get(self):
+    self.render('user_lostpass.html')
+
+  @base.require_priv(builtin.PRIV_REGISTER_USER)
+  @base.post_argument
+  @base.sanitize
+  @base.limit_rate('send_mail', 3600, 30)
+  async def post(self, *, mail: str):
+    validator.check_mail(mail)
+    udoc = await user.get_by_mail(mail)
+    if not udoc:
+      raise error.UserNotFoundError(mail)
+    rid, _ = await token.add(token.TYPE_LOSTPASS,
+                             options.lostpass_token_expire_seconds,
+                             uid=udoc['_id'])
+    await self.send_mail(mail, 'Lost Password', 'user_lostpass_mail.html',
+                         url=self.reverse_url('user_lostpass_with_code', code=rid),
+                         uname=udoc['uname'])
+    self.render('user_lostpass_mail_sent.html')
+
+
+@app.route('/lostpass/{code}', 'user_lostpass_with_code', global_route=True)
+class UserLostpassWithCodeHandler(base.Handler):
+  TITLE = 'user_lostpass'
+
+  @base.require_priv(builtin.PRIV_REGISTER_USER)
+  @base.route_argument
+  @base.sanitize
+  async def get(self, *, code: str):
+    tdoc = await token.get(code, token.TYPE_LOSTPASS)
+    if not tdoc:
+      raise error.InvalidTokenError(token.TYPE_LOSTPASS, code)
+    udoc = await user.get_by_uid(tdoc['uid'])
+    self.render('user_lostpass_with_code.html', uname=udoc['uname'])
+
+  @base.require_priv(builtin.PRIV_REGISTER_USER)
+  @base.route_argument
+  @base.post_argument
+  @base.sanitize
+  async def post(self, *, code: str, password: str, verify_password: str):
+    tdoc = await token.get(code, token.TYPE_LOSTPASS)
+    if not tdoc:
+      raise error.InvalidTokenError(token.TYPE_LOSTPASS, code)
+    if password != verify_password:
+      raise error.VerifyPasswordError()
+    await user.set_password(tdoc['uid'], password)
+    await token.delete(code, token.TYPE_LOSTPASS)
+    self.json_or_redirect(self.reverse_url('domain_main'))
+
+
+# ── OAuth Login ──
+
+SCOPE = 'user:profile user:email'
+
+
+def _oauth_redirect_uri():
+  return options.url_prefix.rstrip('/') + '/oauth/callback'
+
+
+def _build_oauth_url(state):
+  params = {
+    'client_id': options.oauth_client_id,
+    'redirect_uri': _oauth_redirect_uri(),
+    'response_type': 'code',
+    'scope': SCOPE,
+    'state': state,
+  }
+  return options.oauth_auth_base.rstrip('/') + '/oauth/authorize?' + parse.urlencode(params)
 
 
 @app.route('/oauth/callback', 'oauth_callback', global_route=True)
@@ -78,7 +159,6 @@ class OAuthCallbackHandler(base.Handler):
     state = self.request.query.get('state')
     error_param = self.request.query.get('error')
 
-    # Handle denied authorization
     if error_param:
       _logger.warning('OAuth authorization denied: %s', error_param)
       self.render('user_login.html', oauth_error=error_param)
@@ -87,35 +167,46 @@ class OAuthCallbackHandler(base.Handler):
     if not code:
       raise error.ValidationError('code')
 
-    # Verify state for CSRF protection
     saved_state = self.session.get('oauth_state')
     if saved_state and state != saved_state:
-      _logger.warning('OAuth state mismatch: expected %s, got %s', saved_state, state)
+      _logger.warning('OAuth state mismatch')
       raise error.ValidationError('state')
 
-    # Exchange code for access token
     token_data = await self._exchange_code(code)
     access_token = token_data.get('access_token')
     if not access_token:
       _logger.error('OAuth token exchange failed: %s', token_data)
       raise error.UserFacingError('Failed to obtain access token.')
 
-    # Fetch user info from NetEssX API
     user_data = await self._fetch_user_info(access_token)
     if not user_data:
       raise error.UserFacingError('Failed to fetch user info.')
-
-    _logger.debug('User info: %s', user_data)
 
     oauth_uid = str(user_data.get('uid'))
     uname = user_data.get('uname', '')
     gravatar = user_data.get('gravatar', '')
     mail = user_data.get('mail', '')
 
-    # Find or create local user
+    # Check if this is a binding request (user already logged in)
+    if self.session.get('oauth_bind'):
+      self.session.pop('oauth_bind', None)
+      if not self.has_priv(builtin.PRIV_USER_PROFILE):
+        raise error.PrivilegeError(builtin.PRIV_USER_PROFILE)
+      # Check if OAuth UID is already bound to another user
+      existing = await user.get_by_oauth_uid(oauth_uid)
+      if existing and existing['_id'] != self.user['_id']:
+        raise error.UserAlreadyExistError(oauth_uid)
+      # Link OAuth to current user
+      await user.set_by_uid(self.user['_id'], oauth_uid=oauth_uid)
+      if gravatar:
+        await user.set_by_uid(self.user['_id'], gravatar=gravatar)
+      self.session.pop('oauth_state', None)
+      self.redirect(self.reverse_url('home_security'))
+      return
+
+    # Normal OAuth login
     udoc = await user.get_by_oauth_uid(oauth_uid)
     if not udoc:
-      # Create a new user from OAuth data
       try:
         uid = await user.add_by_oauth(
           oauth_uid=oauth_uid,
@@ -125,47 +216,37 @@ class OAuthCallbackHandler(base.Handler):
           regip=self.remote_ip,
         )
       except error.UserAlreadyExistError:
-        # Fallback: try to find by uname
         udoc = await user.get_by_uname(uname)
         if not udoc:
           raise
         uid = udoc['_id']
     else:
       uid = udoc['_id']
-      # Update gravatar on re-login
       if gravatar:
         await user.set_by_uid(uid, gravatar=gravatar)
 
-    # Update login info and create session
     await asyncio.gather(
       user.set_by_uid(uid, loginat=datetime.datetime.utcnow(), loginip=self.remote_ip),
       self.update_session(new_saved=True, uid=uid),
     )
-
-    # Clear OAuth state
     self.session.pop('oauth_state', None)
-
     self.redirect(self.reverse_url('domain_main'))
 
   async def _exchange_code(self, code: str) -> dict:
-    """Exchange authorization code for access token."""
     auth_base = options.oauth_auth_base.rstrip('/')
     url = auth_base + '/oauth/token'
     data = {
       'grant_type': 'authorization_code',
       'code': code,
-      # 'redirect_uri': options.url_prefix.rstrip('/') + '/oauth/callback',
-      'redirect_uri': 'http://127.0.0.1:8888/oauth/callback',
+      'redirect_uri': _oauth_redirect_uri(),
       'client_id': options.oauth_client_id,
       'client_secret': options.oauth_client_secret,
     }
-    _logger.debug('Sending authorization request: %s', data)
     async with aiohttp.ClientSession() as session:
       async with session.post(url, data=data) as resp:
         return await resp.json()
 
   async def _fetch_user_info(self, access_token: str) -> dict:
-    """Fetch user info from NetEssX API using access token."""
     auth_base = options.oauth_auth_base.rstrip('/')
     url = auth_base + '/api/user/me'
     headers = {'Authorization': 'Bearer ' + access_token}
@@ -177,6 +258,24 @@ class OAuthCallbackHandler(base.Handler):
         return await resp.json()
 
 
+# ── OAuth Account Binding (for existing password users) ──
+
+@app.route('/oauth/bind', 'oauth_bind', global_route=True)
+class OAuthBindHandler(base.Handler):
+  """Initiate OAuth binding from the security page."""
+
+  @base.require_priv(builtin.PRIV_USER_PROFILE)
+  async def get(self):
+    if not options.oauth_client_id or not options.oauth_client_secret:
+      raise error.UserFacingError('OAuth is not configured.')
+    state = secrets.token_urlsafe(32)
+    self.session['oauth_state'] = state
+    self.session['oauth_bind'] = True
+    self.redirect(_build_oauth_url(state))
+
+
+# ── Logout ──
+
 @app.route('/logout', 'user_logout', global_route=True)
 class UserLogoutHandler(base.Handler):
   @base.require_priv(builtin.PRIV_USER_PROFILE)
@@ -184,10 +283,13 @@ class UserLogoutHandler(base.Handler):
     self.render('user_logout.html')
 
   @base.require_priv(builtin.PRIV_USER_PROFILE)
+  @base.require_csrf_token
   async def post(self):
     await self.delete_session()
     self.json_or_redirect(self.referer_or_main)
 
+
+# ── User Detail / Search ──
 
 @app.route('/user/{uid:-?\d+}', 'user_detail')
 class UserDetailHandler(base.Handler, UserSettingsMixin):
@@ -200,13 +302,11 @@ class UserDetailHandler(base.Handler, UserSettingsMixin):
       raise error.UserNotFoundError(uid)
     dudoc, sdoc = await asyncio.gather(domain.get_user(self.domain_id, udoc['_id']),
                                        token.get_most_recent_session_by_uid(udoc['_id']))
-
     rdocs = record.get_multi(get_hidden=self.has_priv(builtin.PRIV_VIEW_HIDDEN_RECORD),
                              uid=uid).sort([('_id', -1)])
     rdocs = await rdocs.limit(10).to_list()
     pdict = await problem.get_dict_multi_domain((rdoc['domain_id'], rdoc['pid']) for rdoc in rdocs)
 
-    # check hidden problem
     if not self.has_perm(builtin.PERM_VIEW_PROBLEM_HIDDEN):
       f = {'hidden': False}
     else:
@@ -238,7 +338,7 @@ class UserDetailHandler(base.Handler, UserSettingsMixin):
       ddocs = []
       vndict = {}
       dcount = 0
-    
+
     self.render('user_detail.html', is_self_profile=is_self_profile,
                 udoc=udoc, dudoc=dudoc, sdoc=sdoc,
                 rdocs=rdocs, pdict=pdict, pdocs=pdocs, pcount=pcount,
@@ -257,7 +357,6 @@ class UserCheatHandler(base.Handler, UserSettingsMixin):
       raise error.UserNotFoundError(uid)
     status = not udoc.get("cheater", False)
     await user.set_cheat(uid, status)
-
     self.json_or_redirect(self.reverse_url('user_detail', uid=uid))
 
 
@@ -272,7 +371,6 @@ class UserMemorialAccountHandler(base.Handler, UserSettingsMixin):
       raise error.UserNotFoundError(uid)
     status = not udoc.get("commemorate", False)
     await user.set_commemorate(uid, status)
-
     self.json_or_redirect(self.reverse_url('user_detail', uid=uid))
 
 
@@ -299,7 +397,7 @@ class UserSearchHandler(base.Handler):
       udoc = await user.get_by_uid(int(q), user.PROJECTION_PUBLIC)
       if udoc:
         udocs.insert(0, udoc)
-    except ValueError as e:
+    except ValueError:
       pass
     for i in range(len(udocs)):
       self.modify_udoc(udocs, i)

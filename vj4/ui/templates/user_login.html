@@ -8,13 +8,53 @@
       <p>{{ _('Authorization denied or failed. Please try again.') }}</p>
     </div>
     {% endif %}
+    {% if oauth_configured %}
     <div class="row"><div class="columns">
       <div class="text-center">
-        <a href="{{ reverse_url('user_login') }}" class="inverse expanded rounded primary button">
+        <a href="{{ reverse_url('user_login') }}?oauth=1" class="inverse expanded rounded primary button">
           {{ _('Login with NetEssX') }}
         </a>
       </div>
     </div></div>
+    <div class="row"><div class="columns">
+      <div class="text-center supplementary inverse">
+        <p>{{ _('Recommended — use your NetEssX account to log in.') }}</p>
+      </div>
+    </div></div>
+    <hr>
+    {% endif %}
+    <details{% if not oauth_configured %} open{% endif %}>
+      <summary class="inverse text-center">{{ _('Password login (for existing users)') }}</summary>
+      <form method="POST">
+        <div class="row"><div class="columns">
+          <label class="inverse material textbox">
+            {{ _('Username') }}
+            <input name="uname" type="text" autofocus>
+          </label>
+        </div></div>
+        <div class="row"><div class="columns">
+          <label class="inverse material textbox">
+            {{ _('Password') }}
+            <input name="password" type="password">
+          </label>
+        </div></div>
+        <div class="row"><div class="columns">
+            <label class="inverse material checkbox">
+              <input type="checkbox" name="rememberme">{{ _('Remember me') }}
+            </label>
+          </div></div>
+        <div class="row"><div class="columns">
+          <div class="text-center">
+            <input type="submit" value="{{ _('Login') }}" class="inverse expanded rounded button">
+          </div>
+        </div></div>
+        <div class="row"><div class="columns">
+          <div class="text-center supplementary inverse">
+            <a href="{{ reverse_url('user_lostpass') }}">{{ _('Forgot password or username?') }}</a>
+          </div>
+        </div></div>
+      </form>
+    </details>
   </div>
 </div></div>
 {% endblock %}
