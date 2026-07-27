@@ -5,7 +5,7 @@ import aioamqp
 from vj4.util import options
 
 options.define('mq_host', default='localhost', help='Message queue hostname or IP address.')
-options.define('mq_vhost', default='/', help='Message queue virtual host.')
+options.define('mq_vhost', default='/akioioj', help='Message queue virtual host.')
 
 _protocol_future = None
 _channel_futures = {}
