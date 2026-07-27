@@ -26,15 +26,17 @@ options.define('saved_session_expire_seconds', default=2592000,
                help='Expire time for saved session, in seconds.')
 options.define('cookie_domain', default='', help='Cookie domain.')
 options.define('cookie_secure', default=False, help='Enable secure cookie flag.')
-options.define('registration_token_expire_seconds', default=86400,
-               help='Expire time for registration token, in seconds.')
-options.define('lostpass_token_expire_seconds', default=3600,
-               help='Expire time for lostpass token, in seconds.')
 options.define('changemail_token_expire_seconds', default=3600,
                help='Expire time for changemail token, in seconds.')
-options.define('url_prefix', default='https://oj.xzynb.top', help='URL prefix.')
+options.define('url_prefix', default='https://oj.netessx.com', help='URL prefix.')
 options.define('cdn_prefix', default='/', help='CDN prefix.')
+options.define('default_avatar', default='https://netessx.com/statics/img/logo-nobg.png', help='Default avatar URL.')
 options.define('sentry_dsn', default='', help='Sentry integration DSN.')
+
+# OAuth 2.0 configuration (NetEssX OAuth Integration)
+options.define('oauth_client_id', default='', help='OAuth Client ID.')
+options.define('oauth_client_secret', default='', help='OAuth Client Secret.')
+options.define('oauth_auth_base', default='https://accounts.netessx.com', help='OAuth Auth Server Base URL.')
 
 _logger = logging.getLogger(__name__)
 

@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://github.com/Gingmzmzx/AKIOIOJ">
-    <img src="https://oj.xzynb.top/components/header/header-logo-summer@2x.png?9c49817d0a" alt="vj4" width="100%" align="middle" />
+    <img src="https://oj.netessx.com/components/header/header-logo-summer@2x.png?9c49817d0a" alt="vj4" width="100%" align="middle" />
   </a>
 </p>
 
@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  由<a href="https://oj.xzynb.top" target="_blank">AKIOIOJ</a>强力驱动的新一代Online Judge服务
+  由<a href="https://oj.netessx.com" target="_blank">AKIOIOJ</a>强力驱动的新一代Online Judge服务
 </p>
 
 <p align="center">

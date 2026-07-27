@@ -395,7 +395,7 @@ LEVELS = collections.OrderedDict([(10, 1),
                                   (1, 100)])
 
 # Footer extra HTMLs.
-FOOTER_EXTRA_HTMLS = ['© 2024 <a href="https://oj.xzynb.top">oj.xzynb.top</a>', "Powered by <a href='https://github.com/Gingmzmzx/AKIOIOJ'>AKIOIOJ</a> and <a href='https://github.com/vijos/vj4'>Vijos</a>"]
+FOOTER_EXTRA_HTMLS = ['© 2024 <a href="https://oj.netessx.com">oj.netessx.com</a>', "Powered by <a href='https://github.com/Gingmzmzx/AKIOIOJ'>AKIOIOJ</a> and <a href='https://github.com/vijos/vj4'>Vijos</a>"]
 
 PROBLEM_CATEGORIES = collections.OrderedDict([
     ('动态规划', [

@@ -2,44 +2,21 @@
   <div class="dialog__content">
     <div class="dialog--signin__bg">
       <div class="dialog--signin__side">
-        <h1>{{ _('Don\'t have an account?') }}</h1>
-        <p>{{ _('By signing up a AKIOI OJ universal account, you can submit code and join discussions in all online judging services provided by us.') }}</p>
-        <div><a href="{{ reverse_url('user_register') }}" class="inverse rounded button">{{ _('Sign Up Now') }}</a></div>
+        <h1>{{ _('Welcome') }}</h1>
+        <p>{{ _('By logging in with your NetEssX account, you can submit code and join discussions in all online judging services provided by us.') }}</p>
       </div>
     </div>
     <div class="dialog--signin__main">
-      <form action="{{ reverse_url('user_login') }}" method="post">
-        <div class="dialog--signin__close-container supplementary">
-          <a name="dialog--signin__close" href="javascript:;">{{ _('CLOSE') }}</a>
-        </div>
-        <h1 class="dialog--signin__title">{{ _('SIGN IN') }}</h1>
-        <p class="dialog--signin__note">{{ _('Using your AKIOI OJ universal account') }}</p>
-        <div class="row"><div class="columns">
-          <label class="material textbox">
-            {{ _('Username') }}
-            <input name="uname" type="text" data-autofocus>
-          </label>
-        </div></div>
-        <div class="row"><div class="columns">
-          <label class="material textbox">
-            {{ _('Password') }}
-            <input name="password" type="password">
-          </label>
-        </div></div>
-        <div class="row"><div class="columns">
-          <label class="checkbox">
-            <input type="checkbox" name="rememberme">{{ _('Remember me') }}
-          </label>
-        </div></div>
-        <div class="row"><div class="columns">
-          <input type="submit" value="{{ _('Sign In') }}" class="expanded rounded primary button">
-        </div></div>
-        <div class="row"><div class="columns">
-          <div class="supplementary text-center">
-            <a href="{{ reverse_url('user_lostpass') }}">{{ _('Forgot password or username?') }}</a>
-          </div>
-        </div></div>
-      </form>
+      <div class="dialog--signin__close-container supplementary">
+        <a name="dialog--signin__close" href="javascript:;">{{ _('CLOSE') }}</a>
+      </div>
+      <h1 class="dialog--signin__title">{{ _('SIGN IN') }}</h1>
+      <p class="dialog--signin__note">{{ _('Using your NetEssX account') }}</p>
+      <div class="row"><div class="columns">
+        <a href="{{ reverse_url('user_login') }}" class="expanded rounded primary button">
+          {{ _('Login with NetEssX') }}
+        </a>
+      </div></div>
     </div>
   </div>
 </div>

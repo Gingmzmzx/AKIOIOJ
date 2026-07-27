@@ -1,33 +1,13 @@
 import base64
 import hashlib
-import hoedown
-try:  # 懒得重构镜像了，凑活着用吧（
-  import bleach
-  # import markdown as mdparser
-except ImportError:
-  import pip
-  pip.main("install bleach markdown".split())
-  import bleach
-  # import markdown as mdparser
+import bleach
 import jinja2
+import markdown as _md
 import markupsafe
 import re
 from urllib import parse
 
 from vj4.util import options
-
-
-MARKDOWN_EXTENSIONS = (hoedown.EXT_TABLES |  # Parse PHP-Markdown style tables.
-                       hoedown.EXT_FENCED_CODE |  # Parse fenced code blocks.
-                       hoedown.EXT_AUTOLINK |  # Automatically turn safe URLs into links.
-                       hoedown.EXT_NO_INTRA_EMPHASIS |  # Disable emphasis_between_words.
-                       hoedown.EXT_MATH |  # Parse TeX $$math$$ syntax, Kramdown style.
-                       hoedown.EXT_SPACE_HEADERS |  # Require a space after '#' in headers.
-                       hoedown.EXT_MATH_EXPLICIT |  # Instead of guessing by context, parse $inline math$ and $$always block math$$ (requires EXT_MATH).
-                       hoedown.EXT_DISABLE_INDENTED_CODE |  # Don't parse indented code blocks.
-                       hoedown.EXT_FOOTNOTES | hoedown.EXT_STRIKETHROUGH | hoedown.EXT_UNDERLINE | hoedown.EXT_HIGHLIGHT | hoedown.EXT_QUOTE | hoedown.EXT_SUPERSCRIPT )
-MARKDOWN_RENDER_FLAGS = ( # hoedown.HTML_ESCAPE |  # Escape all HTML.
-                         hoedown.HTML_HARD_WRAP)  # Render each linebreak as <br>.
 
 ALLOWED_TAGS = bleach.sanitizer.ALLOWED_TAGS + [
     'table', 'tbody', 'thead', 'tr', 'th', 'td',
@@ -70,9 +50,16 @@ def fs_replace(m):
   return '(' + options.cdn_prefix.rstrip('/') + '/fs/' + m.group(1) + ')'
 
 
-def render_markdown(text):
-  # text = text.replace("&amp;", "&")
+MARKDOWN_EXTENSIONS = [
+    'markdown.extensions.extra',
+    'markdown.extensions.footnotes',
+    'markdown.extensions.nl2br',
+    'markdown.extensions.codehilite',
+    'markdown.extensions.toc',
+]
 
+
+def render_markdown(text):
   # 提取数学公式
   math_inline = re.findall(r'\$(.*?)\$', text)
   math_block = re.findall(r'\$\$(.*?)\$\$', text)
@@ -84,7 +71,7 @@ def render_markdown(text):
       text = text.replace(f"$${math}$$", f"@@MATH_BLOCK_{i}@@")
 
   # 渲染 Markdown
-  md_ctx = hoedown.html(text, extensions=MARKDOWN_EXTENSIONS, render_flags=MARKDOWN_RENDER_FLAGS)
+  md_ctx = _md.markdown(text, extensions=MARKDOWN_EXTENSIONS)
 
   # 清理 HTML
   clean_html = bleach.clean(md_ctx, tags=ALLOWED_TAGS, attributes=ALLOWED_ATTRIBUTES)
@@ -101,42 +88,17 @@ def render_markdown(text):
   return markupsafe.Markup(clean_html)
 
 
-def markdown(text):
+def markdown(text):  # noqa: F811 (shadows imported markdown module)
   text = FS_RE.sub(fs_replace, text)
-
-  # Markdown库进行渲染
-  # md_ctx = mdparser.markdown(text,
-  #   extensions=[
-  #       'markdown.extensions.toc',
-  #       'markdown.extensions.extra',
-  #       'markdown.extensions.admonition',
-  #       'markdown.extensions.codehilite',
-  #       'markdown.extensions.meta',
-  #       'markdown.extensions.md_in_html',
-  #       'markdown.extensions.nl2br',
-  #       'markdown.extensions.legacy_attrs',
-  #       'markdown.extensions.legacy_em'
-  #   ]
-  # )
-  # clean_html = bleach.clean(md_ctx, tags=ALLOWED_TAGS, attributes=ALLOWED_ATTRIBUTES)
-  # clean_html = clean_html.replace("<iframe ", "<iframe sandbox='allow-scripts' ")
-  # return markupsafe.Markup(clean_html)
-
-  # hoedown库进行渲染
-  md_ctx = hoedown.html(
-      text, extensions=MARKDOWN_EXTENSIONS, render_flags=MARKDOWN_RENDER_FLAGS)
+  md_ctx = _md.markdown(text, extensions=MARKDOWN_EXTENSIONS)
   clean_html = bleach.clean(md_ctx, tags=ALLOWED_TAGS, attributes=ALLOWED_ATTRIBUTES)
   clean_html = clean_html.replace("<iframe ", "<iframe sandbox='allow-scripts' ")
   return markupsafe.Markup(clean_html)
 
-  # 剥离数学公式进行渲染
-  # return markupsafe.Markup(render_markdown(text))
-
 
 def gravatar_url(gravatar, size=200):
-  # TODO: 'd' should be https://domain/img/avatar.png
   if not gravatar:
-    gravatar = "https://old.xzynb.top/pic/1ico.png"
+    gravatar = options.default_avatar
   return (gravatar)
 
 

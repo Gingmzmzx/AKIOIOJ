@@ -1,7 +1,6 @@
 from os import path
 
 import jinja2
-import jinja2.ext
 import jinja2.runtime
 
 import vj4
@@ -25,7 +24,7 @@ class Environment(jinja2.Environment):
   def __init__(self):
     super(Environment, self).__init__(
         loader=jinja2.FileSystemLoader(path.join(path.dirname(__file__), 'ui/templates')),
-        extensions=[jinja2.ext.with_],
+        extensions=[],
         auto_reload=options.debug,
         autoescape=True,
         trim_blocks=True,

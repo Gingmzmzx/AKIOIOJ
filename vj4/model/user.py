@@ -6,9 +6,11 @@ from pymongo import ReturnDocument
 from vj4 import db
 from vj4 import error
 from vj4.model import builtin
+from vj4.model import system
 from vj4.util import argmethod
 from vj4.util import pwhash
 from vj4.util import validator
+from vj4.util import options
 
 PROJECTION_PUBLIC = {'_id': 1,
                      'uname': 1,
@@ -48,9 +50,38 @@ async def add(uid: int, uname: str, password: str, mail: str, regip: str=''):
                            'priv': builtin.DEFAULT_PRIV,
                            'loginat': datetime.datetime.utcnow(),
                            'loginip': regip,
-                           'gravatar': "https://old.xzynb.top/pic/1ico.png"})
+                           'gravatar': options.default_gravatar})
   except errors.DuplicateKeyError:
     raise error.UserAlreadyExistError(uid, uname, mail) from None
+
+
+@argmethod.wrap
+async def add_by_oauth(oauth_uid: str, uname: str, mail: str, gravatar: str, regip: str=''):
+  """Add a user via OAuth (NetEssX). No password required."""
+  validator.check_uname(uname)
+  validator.check_mail(mail)
+
+  uname_lower = uname.strip().lower()
+  mail_lower = mail.strip().lower()
+
+  uid = await system.inc_user_counter()
+  coll = db.coll('user')
+  try:
+    await coll.insert_one({'_id': uid,
+                           'uname': uname,
+                           'uname_lower': uname_lower,
+                           'mail': mail,
+                           'mail_lower': mail_lower,
+                           'oauth_uid': oauth_uid,
+                           'regat': datetime.datetime.utcnow(),
+                           'regip': regip,
+                           'priv': builtin.DEFAULT_PRIV,
+                           'loginat': datetime.datetime.utcnow(),
+                           'loginip': regip,
+                           'gravatar': gravatar})
+  except errors.DuplicateKeyError:
+    raise error.UserAlreadyExistError(uid, uname, mail) from None
+  return uid
 
 
 @argmethod.wrap
@@ -83,6 +114,13 @@ async def get_by_mail(mail: str, fields=PROJECTION_VIEW):
       return user
   coll = db.coll('user')
   return await coll.find_one({'mail_lower': mail_lower}, fields)
+
+
+@argmethod.wrap
+async def get_by_oauth_uid(oauth_uid: str, fields=PROJECTION_VIEW):
+  """Get a user by their NetEssX OAuth UID."""
+  coll = db.coll('user')
+  return await coll.find_one({'oauth_uid': oauth_uid}, fields)
 
 
 def get_multi(*, fields=PROJECTION_VIEW, **kwargs):
@@ -247,6 +285,7 @@ async def ensure_indexes():
   coll = db.coll('user')
   await coll.create_index('uname_lower', unique=True)
   await coll.create_index('mail_lower', sparse=True)
+  await coll.create_index('oauth_uid', sparse=True)
 
 
 if __name__ == '__main__':

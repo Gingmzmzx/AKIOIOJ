@@ -4,9 +4,9 @@ import yarl
 
 from vj4.util import options
 
-options.define('db_host', default='mongodb', help='Database hostname or IP address.')
+options.define('db_host', default='localhost', help='Database hostname or IP address.')
 options.define('db_port', default=27017, help='Database port.')
-options.define('db_name', default='test', help='Database name.')
+options.define('db_name', default='vijos', help='Database name.')
 options.define('db_username', default='', help='Database username.')
 options.define('db_password', default='', help='Database password.')
 options.define('db_auth_source', default='',

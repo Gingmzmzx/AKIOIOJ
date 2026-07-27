@@ -23,6 +23,7 @@ export default function (env = {}) {
       loader: 'eslint-loader',
       options: {
         configFile: root('vj4/ui/.eslintrc.js'),
+        emitError: false,
       },
     };
   }
@@ -105,6 +106,10 @@ export default function (env = {}) {
         root('node_modules'),
       ],
       alias: {
+        // IcoMoon generates .html files containing Stylus code instead of .styl;
+        // these must precede the general vj prefix alias to match first.
+        'vj/misc/.iconfont/webicon.styl$': root('vj4/ui/misc/.iconfont/webicon.styl'),
+        'vj/misc/.iconfont/webicon.inc.styl$': root('vj4/ui/misc/.iconfont/webicon.inc.styl'),
         vj: root('vj4/ui'),
         picker: 'pickadate/lib/picker',
       },
@@ -142,7 +147,7 @@ export default function (env = {}) {
           use: [babelLoader()],
         },
         {
-          test: /\.styl$/,
+          test: /\.styl$|\.iconfont[\\/].*\.html$/,
           use: env.watch
             ? [styleLoader(), cssLoader(), postcssLoader(), stylusLoader()]
             : [extractCssLoader(), cssLoader(), postcssLoader(), stylusLoader()]
@@ -200,7 +205,7 @@ export default function (env = {}) {
 
       // Options are provided by LoaderOptionsPlugin until webpack#3136 is fixed
       new webpack.LoaderOptionsPlugin({
-        test: /\.styl$/,
+        test: /\.styl$|\.iconfont[\\/].*\.html$/,
         stylus: {
           default: {
             preferPathResolver: 'webpack',
