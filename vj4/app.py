@@ -35,6 +35,7 @@ options.define('lostpass_token_expire_seconds', default=3600,
 options.define('url_prefix', default='https://oj.netessx.com', help='URL prefix.')
 options.define('cdn_prefix', default='/', help='CDN prefix.')
 options.define('default_avatar', default='https://netessx.com/statics/img/logo-nobg.png', help='Default avatar URL.')
+options.define('default_gravatar', default='https://netessx.com/statics/img/logo-nobg.png', help='Default gravatar URL.')
 options.define('sentry_dsn', default='', help='Sentry integration DSN.')
 
 # OAuth 2.0 configuration (NetEssX OAuth Integration)
