@@ -10,7 +10,6 @@ from vj4.model import system
 from vj4.util import argmethod
 from vj4.util import pwhash
 from vj4.util import validator
-from vj4.util import options
 
 PROJECTION_PUBLIC = {'_id': 1,
                      'uname': 1,
@@ -49,8 +48,7 @@ async def add(uid: int, uname: str, password: str, mail: str, regip: str=''):
                            'regip': regip,
                            'priv': builtin.DEFAULT_PRIV,
                            'loginat': datetime.datetime.utcnow(),
-                           'loginip': regip,
-                           'gravatar': options.default_gravatar})
+                           'loginip': regip})
   except errors.DuplicateKeyError:
     raise error.UserAlreadyExistError(uid, uname, mail) from None
 
