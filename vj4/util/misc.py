@@ -5,7 +5,7 @@ import markdown as _md
 import markupsafe
 import re
 from markdown.extensions import Extension
-from markdown.treeprocessors import Treeprocessor
+from markdown.inlinepatterns import InlineProcessor
 from urllib import parse
 
 from vj4.util import options
@@ -61,79 +61,44 @@ MARKDOWN_EXTENSIONS = [
 
 
 # Display math first, then inline math. A leading backslash escapes a literal
-# dollar sign or bracket.
-MATH_RE = re.compile(r'''
-    (?<!\\)\$\$(?P<display>.+?)(?<!\\)\$\$
-  | (?<!\\)\\\[(?P<display_bracket>.+?)(?<!\\)\\\]
-  | (?<!\\)\$(?!\$)(?P<inline>[^\n]+?)(?<!\\)\$(?!\$)
-  | (?<!\\)\\\((?P<inline_bracket>.+?)(?<!\\)\\\)
-''', re.VERBOSE | re.DOTALL)
+# dollar sign or bracket. Inline math stays on one line so that a stray `$`
+# cannot swallow the rest of the paragraph.
+MATH_PATTERN = (
+    r'(?<!\\)\$\$(?P<display>.+?)(?<!\\)\$\$'
+    r'|(?<!\\)\\\[(?P<display_bracket>.+?)(?<!\\)\\\]'
+    r'|(?<!\\)\$(?!\$)(?P<inline>[^\n]+?)(?<!\\)\$(?!\$)'
+    r'|(?<!\\)\\\((?P<inline_bracket>.+?)(?<!\\)\\\)'
+)
 
-MATH_PLACEHOLDER = '@@MATH{0}@@'
 
+class _MathInlineProcessor(InlineProcessor):
+  """Keep TeX source out of Markdown's way, verbatim, for the KaTeX renderer.
 
-class _MathTreeprocessor(Treeprocessor):
-  """Replace math with placeholders before the HTML is sanitized.
+  Markdown would otherwise mangle the source: underscores become emphasis,
+  `\\` and `\\{` lose their backslash to the escape pattern, and the nl2br
+  extension shreds multi-line display math into separate text nodes.
 
-  Markdown would otherwise mangle TeX source (underscores turn into emphasis,
-  backslashes turn into escapes) and bleach would strip the markup KaTeX needs.
-  The placeholders are substituted back, HTML escaped, once bleach has run.
+  Returning a plain string stashes the match, and stashed matches are skipped
+  by every later inline pattern, so the source reaches the page untouched.
   """
 
-  def __init__(self, md, store):
-    super(_MathTreeprocessor, self).__init__(md)
-    self.store = store
-
-  def run(self, root):
-    self._walk(root)
-    return root
-
-  def _walk(self, element):
-    # Code spans and blocks are never math.
-    if element.tag in ('code', 'pre'):
-      return
-    if element.text:
-      element.text = self._replace(element.text)
-    for child in element:
-      self._walk(child)
-      if child.tail:
-        child.tail = self._replace(child.tail)
-
-  def _replace(self, text):
-    def repl(match):
-      index = len(self.store)
-      self.store.append(match.group(0))
-      return MATH_PLACEHOLDER.format(index)
-    return MATH_RE.sub(repl, text)
+  def handleMatch(self, m, data):
+    return m.group(0), m.start(0), m.end(0)
 
 
 class _MathExtension(Extension):
-  def __init__(self, store):
-    super(_MathExtension, self).__init__()
-    self.store = store
-
   def extendMarkdown(self, md):
-    # Runs last. It has to come after the inline processor (20) so that the
-    # TeX source is read from finished text nodes, and after UnescapeTreeprocessor
-    # (0), which turns Markdown's internal escapes back into real characters.
-    md.treeprocessors.register(_MathTreeprocessor(md, self.store), 'vj4_math', -1)
-
-
-def _restore_math(html, store):
-  for index, source in enumerate(store):
-    html = html.replace(MATH_PLACEHOLDER.format(index),
-                        markupsafe.escape(source))
-  return html
+    # Between the code span pattern (190) and the escape pattern (180): a `$`
+    # inside `code` is not math, and `\\`/`\\{` inside math are still intact.
+    md.inlinePatterns.register(_MathInlineProcessor(MATH_PATTERN, md), 'vj4_math', 185)
 
 
 def markdown(text):
   text = FS_RE.sub(fs_replace, text)
-  math = []
-  md_ctx = _md.markdown(text,
-                        extensions=MARKDOWN_EXTENSIONS + [_MathExtension(math)])
+  md_ctx = _md.markdown(text, extensions=MARKDOWN_EXTENSIONS + [_MathExtension()])
   clean_html = bleach.clean(md_ctx, tags=ALLOWED_TAGS, attributes=ALLOWED_ATTRIBUTES)
   clean_html = clean_html.replace("<iframe ", "<iframe sandbox='allow-scripts' ")
-  return markupsafe.Markup(_restore_math(clean_html, math))
+  return markupsafe.Markup(clean_html)
 
 
 def gravatar_url(gravatar, size=200):
