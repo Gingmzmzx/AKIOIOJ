@@ -878,3 +878,4 @@ With this feature, you can copy problems that you can view from a domain to some
 Instead of copying the test data directly, the test data of the copied problems will be linked to the test data of the source problems (called the source test data). Thus, the copied problems can observe the changes in the source test data. The permissions of the test data of the copied problems follow the source test data, e.g., you still might not download them but the judges can. By uploading some new test data, the link will be broken and the new test data will be used.: 虽然测试数据不会被复制，但是系统会将题目的测试数据链接到原题。因此在原题的数据被改动的时候，复制后的题目的数据也会同时改动。链接后的测试数据的权限以原题为准，比如您可能依旧无法下载数据，但是评测机可以。在题目设置页面中可以通过上传新的测试数据的方式，这个数据链接会被删除，以后将使用您的新测试数据。
 This message will be presented to those whose submissions are accepted.: 这条消息将会被展示给通过此题的用户。
 Sorry, there is no user in this domain.: 此域中目前没有用户。
+Password login (for existing users): 密码登录（仅在2026年7月前注册的用户） 点击展开
