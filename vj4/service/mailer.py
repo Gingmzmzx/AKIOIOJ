@@ -23,7 +23,7 @@ _logger = logging.getLogger(__name__)
 @argmethod.wrap
 async def send_mail(to: str, subject: str, content: str):
   _logger.info('Sending mail')
-  _logger.debug('to: %s, subject: %s, content: %s', to, subject, content)
+  _logger.debug('to: %s, subject: %s', to, subject)
 
   msg = EmailMessage()
   msg.set_content(content, subtype='html', charset='utf-8')
